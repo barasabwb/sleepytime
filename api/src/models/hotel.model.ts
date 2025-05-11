@@ -19,20 +19,21 @@ export interface IHotel extends Document {
 }
 
 // Room Schema (subdocument)
-const RoomSchema: Schema = new Schema<IRoom>(
-  {
-    roomType: { type: String, required: true },
-    pricePerNight: { type: Number, required: true },
-    maxGuests: { type: Number, required: true },
-    availableDates: [
-      {
-        from: { type: Date, required: true },
-        to: { type: Date, required: true }
-      }
-    ]
-  },
-  { _id: false }
-);
+// models/Hotel.ts (Room subdocument)
+
+const RoomSchema = new mongoose.Schema({
+  roomType: { type: String, required: true },
+  pricePerNight: { type: Number, required: true },
+  maxGuests: { type: Number, required: true },
+  availableDates: [
+    {
+      from: Date,
+      to: Date,
+    },
+  ],
+  quantity: { type: Number, required: true, default: 1 }, // 👈 new field
+});
+
 
 // Hotel Schema
 const HotelSchema: Schema = new Schema<IHotel>(
