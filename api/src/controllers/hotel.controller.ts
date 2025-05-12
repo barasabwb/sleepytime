@@ -1,5 +1,7 @@
 import { Request, Response } from 'express';
 import { Hotel } from '../models/hotel.model';
+import { Booking } from '../models/booking.model';
+
 
 export const createHotel = async (req: Request, res: Response) => {
   const { name, location, description, photos, services, rooms } = req.body;
@@ -126,6 +128,34 @@ export const getHotelById = async (req: Request, res: Response) => {
   } catch (err) {
     console.error('Error retrieving hotel:', err);
     res.status(500).json({ message: 'Failed to retrieve hotel' });
+  }
+};
+
+
+export const getHotelStats = async (req: Request, res: Response) => {
+  try {
+    const hotels = await Hotel.find();
+
+    const stats = await Promise.all(
+      hotels.map(async (hotel) => {
+        const bookingCount = await Booking.countDocuments({ hotel: hotel._id, status: 'confirmed' });
+        const totalRevenue = await Booking.aggregate([
+          { $match: { hotel: hotel._id, status: 'confirmed' } },
+          { $group: { _id: null, total: { $sum: '$totalPrice' } } },
+        ]);
+        return {
+          hotelName: hotel.name,
+          location: hotel.location,
+          bookingCount,
+          totalRevenue: totalRevenue[0]?.total || 0,
+        };
+      })
+    );
+
+    res.json({ stats });
+  } catch (err) {
+    console.error('Error fetching hotel stats:', err);
+    res.status(500).json({ message: 'Failed to fetch hotel stats' });
   }
 };
 
