@@ -1,12 +1,24 @@
-<div class="min-h-screen bg-base-100 flex flex-col items-center justify-center text-center px-4">
-  <div class="max-w-2xl">
-    <h1 class="text-5xl font-bold mb-4">Welcome to SleepyTime 💤</h1>
-    <p class="text-lg text-gray-500 mb-6">
-      Book hotels easily, enjoy your stay, and manage your trips all in one place.
+<section
+  class="relative h-screen w-full bg-cover bg-center flex items-center justify-center"
+  style="background-image: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1470&q=80');"
+>
+  <div class="absolute inset-0 bg-black/50 backdrop-blur-md"></div>
+
+  <div #heroContent class="relative z-10 max-w-2xl text-center text-white px-4">
+    <img src="/assets/logo.png" alt="Sleepytime Logo" class="mx-auto mb-6 h-16 drop-shadow-lg" />
+    <h1 class="text-5xl lg:text-6xl font-bold mb-4 leading-tight tracking-tight">
+      Sleepytime Retreats
+    </h1>
+    <p class="text-xl mb-8 opacity-90">
+      Where comfort meets class. Book your dream stay in seconds.
     </p>
-    <div class="flex gap-4 justify-center">
-      <a routerLink="/login" class="btn btn-primary">Login</a>
-      <a routerLink="/register" class="btn btn-outline">Register</a>
+    <div class="flex flex-col sm:flex-row justify-center gap-4">
+      <button class="btn btn-primary btn-wide text-lg">
+        🌙 Browse Hotels
+      </button>
+      <button class="btn btn-outline btn-accent btn-wide text-lg">
+        ✨ Book Now
+      </button>
     </div>
   </div>
-</div>
+</section>
