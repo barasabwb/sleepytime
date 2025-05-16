@@ -1,0 +1,41 @@
+/* Custom styles for hotel cards */
+.card {
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+}
+
+/* Custom badge styles */
+.badge {
+  padding: 0.35rem 0.65rem !important;
+  font-size: 0.75rem !important;
+  line-height: 1rem !important;
+  border-radius: 9999px !important;
+}
+
+/* Button hover effects */
+.mat-mdc-raised-button:hover {
+  transform: translateY(-1px);
+}
+
+/* Pagination styles */
+.mat-mdc-paginator {
+  background: transparent !important;
+}
+
+/* Form field styles */
+.mat-mdc-form-field {
+  width: 100%;
+}
+
+/* Favorite button */
+.mat-mdc-icon-button {
+  transition: all 0.2s ease;
+}
+
+.mat-mdc-icon-button:hover {
+  transform: scale(1.1);
+}

@@ -1,0 +1,35 @@
+/* Smooth glassy effect for container */
+.container {
+  background: rgba(255 255 255 / 0.7);
+  backdrop-filter: saturate(180%) blur(10px);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  border-radius: 12px;
+}
+
+/* Table header and cells */
+th.mat-header-cell {
+  font-weight: 700;
+  color: #4b5563; /* Tailwind gray-700 */
+}
+
+td.mat-cell {
+  color: #374151; /* Tailwind gray-800 */
+}
+
+button[mat-icon-button] {
+  transition: background-color 0.3s ease;
+}
+
+button[mat-icon-button]:hover {
+  background-color: #fee2e2; /* Tailwind red-100 */
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  form.mat-form-field {
+    width: auto;
+  }
+}

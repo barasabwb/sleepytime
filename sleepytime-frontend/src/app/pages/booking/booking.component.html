@@ -1,0 +1,64 @@
+<div class="max-w-3xl mx-auto px-4 py-10">
+  <h2 class="text-3xl font-bold text-center mb-8">🛏️ Book Your Stay</h2>
+
+  <form [formGroup]="bookingForm" (ngSubmit)="onSubmit()" class="space-y-6 bg-base-200 p-6 rounded-xl shadow-md">
+
+    <!-- Name -->
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Name</mat-label>
+      <input matInput formControlName="name" />
+      <mat-error *ngIf="bookingForm.get('name')?.invalid">Name is required</mat-error>
+    </mat-form-field>
+
+    <!-- Email -->
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Email</mat-label>
+      <input matInput formControlName="email" />
+      <mat-error *ngIf="bookingForm.get('email')?.invalid">Valid email is required</mat-error>
+    </mat-form-field>
+
+    <!-- Check-in -->
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Check-in Date</mat-label>
+      <input matInput type="date" formControlName="checkIn" />
+      <mat-error *ngIf="bookingForm.get('checkIn')?.invalid">Required</mat-error>
+    </mat-form-field>
+
+    <!-- Check-out -->
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Check-out Date</mat-label>
+      <input matInput type="date" formControlName="checkOut" />
+      <mat-error *ngIf="bookingForm.get('checkOut')?.invalid">Required</mat-error>
+    </mat-form-field>
+
+    <!-- Guests -->
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Number of Guests</mat-label>
+      <input matInput type="number" formControlName="guests" />
+      <mat-error *ngIf="bookingForm.get('guests')?.invalid">Must be at least 1</mat-error>
+    </mat-form-field>
+
+    <!-- Room Type -->
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Room Type</mat-label>
+      <mat-select formControlName="roomType">
+        <mat-option value="standard">Standard</mat-option>
+        <mat-option value="deluxe">Deluxe</mat-option>
+        <mat-option value="suite">Suite</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <!-- Summary -->
+    <div class="bg-base-100 p-4 rounded-lg shadow">
+      <h3 class="text-xl font-semibold mb-2">💰 Booking Summary</h3>
+      <p>Nights: <strong>{{ totalNights }}</strong></p>
+      <p>Guests: <strong>{{ bookingForm.value.guests }}</strong></p>
+      <p>Room Type: <strong>{{ bookingForm.value.roomType }}</strong></p>
+      <p class="text-lg mt-2">Total Cost: <strong class="text-accent">${{ totalCost }}</strong></p>
+    </div>
+
+    <button type="submit" mat-raised-button color="primary" class="w-full mt-4">
+      Confirm Booking
+    </button>
+  </form>
+</div>

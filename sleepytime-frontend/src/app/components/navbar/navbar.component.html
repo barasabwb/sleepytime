@@ -1,0 +1,85 @@
+<nav class="fixed top-0 left-0 w-full bg-base-100 bg-opacity-90 backdrop-blur-sm shadow-md z-50 border-b border-base-200">
+  <div class="container mx-auto px-4">
+    <div class="flex items-center justify-between h-16">
+      <!-- Logo -->
+      <div class="flex-shrink-0 flex items-center">
+        <img src="/assets/logo.png" alt="SleepyTime Logo" class="h-10" />
+        <span class="ml-3 text-xl font-bold text-primary hidden md:inline">SleepyTime</span>
+      </div>
+
+      <!-- Desktop Navigation -->
+      <div class="hidden md:flex items-center space-x-2">
+        <button mat-raised-button color="primary" class="!rounded-full" routerLink="/">
+          <mat-icon>home</mat-icon>
+          <span class="ml-2">Home</span>
+        </button>
+        <button mat-raised-button color="primary" class="!rounded-full" routerLink="/hotels">
+          <mat-icon>hotel</mat-icon>
+          <span class="ml-2">Browse Hotels</span>
+        </button>
+        <button mat-raised-button color="accent" class="!rounded-full" routerLink="/bookings">
+          <mat-icon>event_available</mat-icon>
+          <span class="ml-2">Book Now</span>
+        </button>
+
+        <!-- User Menu -->
+        <button mat-icon-button [matMenuTriggerFor]="userMenu" class="ml-4">
+          <mat-icon class="text-primary">account_circle</mat-icon>
+        </button>
+        <mat-menu #userMenu="matMenu">
+          <button mat-menu-item routerLink="/profile">
+            <mat-icon>person</mat-icon>
+            <span>My Profile</span>
+          </button>
+          <button mat-menu-item routerLink="/my-bookings">
+            <mat-icon>bookmark</mat-icon>
+            <span>My Bookings</span>
+          </button>
+          <mat-divider></mat-divider>
+          <button mat-menu-item (click)="logout()">
+            <mat-icon>logout</mat-icon>
+            <span>Sign Out</span>
+          </button>
+        </mat-menu>
+      </div>
+
+      <!-- Mobile Menu Button -->
+      <div class="md:hidden">
+        <button mat-icon-button (click)="toggleMobileMenu()">
+          <mat-icon>menu</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div class="md:hidden" [class.hidden]="!mobileMenuOpen">
+    <div class="px-2 pt-2 pb-3 space-y-1 bg-base-100">
+      <button mat-button color="primary" class="w-full !justify-start" routerLink="/" (click)="mobileMenuOpen = false">
+        <mat-icon>home</mat-icon>
+        <span class="ml-2">Home</span>
+      </button>
+      <button mat-button color="primary" class="w-full !justify-start" routerLink="/hotels" (click)="mobileMenuOpen = false">
+        <mat-icon>hotel</mat-icon>
+        <span class="ml-2">Browse Hotels</span>
+      </button>
+      <button mat-button color="accent" class="w-full !justify-start" routerLink="/bookings" (click)="mobileMenuOpen = false">
+        <mat-icon>event_available</mat-icon>
+        <span class="ml-2">Book Now</span>
+      </button>
+      <mat-divider></mat-divider>
+      <button mat-button class="w-full !justify-start" routerLink="/profile" (click)="mobileMenuOpen = false">
+        <mat-icon>person</mat-icon>
+        <span class="ml-2">My Profile</span>
+      </button>
+      <button mat-button class="w-full !justify-start" routerLink="/my-bookings" (click)="mobileMenuOpen = false">
+        <mat-icon>bookmark</mat-icon>
+        <span class="ml-2">My Bookings</span>
+      </button>
+      <button mat-button class="w-full !justify-start" (click)="logout(); mobileMenuOpen = false">
+        <mat-icon>logout</mat-icon>
+        <span class="ml-2">Sign Out</span>
+      </button>
+    </div>
+  </div>
+</nav>

@@ -1,0 +1,149 @@
+<div class="min-h-screen bg-base-200 p-6">
+  <!-- Dashboard Title -->
+  <div class="flex justify-between items-center mb-8">
+    <h1 class="text-3xl font-bold text-base-content flex items-center gap-3">
+      <mat-icon class="text-primary">dashboard</mat-icon>
+      Admin Dashboard
+    </h1>
+    <div class="flex gap-2">
+      <button mat-raised-button color="primary" class="flex items-center gap-2">
+        <mat-icon>refresh</mat-icon>
+        Refresh
+      </button>
+    </div>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <mat-card *ngFor="let stat of summaryStats" class="shadow-lg" [ngClass]="stat.color">
+      <mat-card-content class="text-white p-6">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-sm font-medium opacity-90">{{ stat.label }}</p>
+            <h3 class="text-2xl font-bold mt-1">{{ stat.value }}</h3>
+          </div>
+          <div class="bg-white bg-opacity-20 rounded-full p-3">
+            <mat-icon class="text-2xl">{{ stat.icon }}</mat-icon>
+          </div>
+        </div>
+        <mat-progress-bar class="mt-4" mode="determinate" [value]="stat.progress" color="accent"></mat-progress-bar>
+        <div class="flex justify-between text-xs mt-1 opacity-80">
+          <span>Last month</span>
+          <span>+{{ stat.progress }}%</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Recent Bookings and Activities -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Latest Bookings -->
+    <mat-card class="lg:col-span-2">
+      <mat-card-header>
+        <mat-card-title class="flex items-center gap-2">
+          <mat-icon color="primary">event_available</mat-icon>
+          Recent Bookings
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="overflow-x-auto">
+          <table mat-table [dataSource]="latestBookings" class="w-full">
+            <!-- User Column -->
+            <ng-container matColumnDef="user">
+              <th mat-header-cell *matHeaderCellDef>User</th>
+              <td mat-cell *matCellDef="let booking">
+                <div class="flex items-center gap-3">
+                  <div class="avatar placeholder">
+                    <div class="bg-neutral text-neutral-content rounded-full w-8">
+                      <span>{{ booking.user.charAt(0) }}</span>
+                    </div>
+                  </div>
+                  {{ booking.user }}
+                </div>
+              </td>
+            </ng-container>
+
+            <!-- Hotel Column -->
+            <ng-container matColumnDef="hotel">
+              <th mat-header-cell *matHeaderCellDef>Hotel</th>
+              <td mat-cell *matCellDef="let booking">{{ booking.hotel }}</td>
+            </ng-container>
+
+            <!-- Date Column -->
+            <ng-container matColumnDef="date">
+              <th mat-header-cell *matHeaderCellDef>Date</th>
+              <td mat-cell *matCellDef="let booking">{{ booking.date }}</td>
+            </ng-container>
+
+            <!-- Amount Column -->
+            <ng-container matColumnDef="amount">
+              <th mat-header-cell *matHeaderCellDef>Amount</th>
+              <td mat-cell *matCellDef="let booking" class="font-semibold">{{ booking.amount }}</td>
+            </ng-container>
+
+            <!-- Status Column -->
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef>Status</th>
+              <td mat-cell *matCellDef="let booking">
+                <span class="{{ getStatusClass(booking.status) }} px-3 py-1">
+                  {{ booking.status }}
+                </span>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+                class="hover:bg-base-200 transition-colors"></tr>
+          </table>
+        </div>
+      </mat-card-content>
+      <mat-card-actions class="flex justify-end px-4 pb-4">
+        <button mat-button color="primary">View All Bookings</button>
+      </mat-card-actions>
+    </mat-card>
+
+    <!-- Recent Activities -->
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title class="flex items-center gap-2">
+          <mat-icon color="primary">history</mat-icon>
+          Recent Activities
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="space-y-4">
+          <div *ngFor="let activity of recentActivities" class="flex items-start gap-3 p-3 hover:bg-base-200 rounded-lg transition-colors">
+            <div class="flex-shrink-0 mt-1">
+              <mat-icon [ngClass]="activity.color">{{ activity.icon }}</mat-icon>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-medium text-base-content">{{ activity.action }}</p>
+              <p class="text-sm text-base-content opacity-70">{{ activity.user }}</p>
+            </div>
+            <div class="text-xs text-base-content opacity-50 mt-1">{{ activity.time }}</div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
+    <button mat-raised-button color="primary" class="flex flex-col items-center justify-center h-24 gap-2">
+      <mat-icon>add_circle</mat-icon>
+      <span>Add Hotel</span>
+    </button>
+    <button mat-raised-button color="accent" class="flex flex-col items-center justify-center h-24 gap-2">
+      <mat-icon>person_add</mat-icon>
+      <span>Add User</span>
+    </button>
+    <button mat-raised-button color="warn" class="flex flex-col items-center justify-center h-24 gap-2">
+      <mat-icon>report</mat-icon>
+      <span>Generate Report</span>
+    </button>
+    <button mat-raised-button class="flex flex-col items-center justify-center h-24 gap-2 bg-base-300 text-base-content">
+      <mat-icon>settings</mat-icon>
+      <span>Settings</span>
+    </button>
+  </div>
+</div>

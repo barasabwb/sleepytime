@@ -1,0 +1,9 @@
+/* Just a simple clean style */
+img {
+  object-fit: cover;
+  max-height: 400px;
+}
+
+button {
+  cursor: pointer;
+}

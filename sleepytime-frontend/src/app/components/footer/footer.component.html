@@ -1,0 +1,78 @@
+<footer class="bg-base-200 text-base-content border-t border-base-300 pt-10 pb-6 z-50">
+  <div class="container mx-auto px-4">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+      <!-- Brand Info -->
+      <div class="flex flex-col gap-4">
+        <div class="flex items-center gap-3">
+          <mat-icon class="text-primary text-3xl">hotel</mat-icon>
+          <span class="text-2xl font-bold">SleepyTime</span>
+        </div>
+        <p class="text-sm opacity-80">
+          Your perfect stay starts here. Discover the best hotels at affordable prices.
+        </p>
+        <div class="flex gap-4 text-xl">
+          <a href="#" class="hover:text-primary transition-colors" aria-label="Facebook">
+            <mat-icon>facebook</mat-icon>
+          </a>
+          <a href="#" class="hover:text-primary transition-colors" aria-label="Twitter">
+            <mat-icon>twitter</mat-icon>
+          </a>
+          <a href="#" class="hover:text-primary transition-colors" aria-label="Instagram">
+            <mat-icon>instagram</mat-icon>
+          </a>
+        </div>
+      </div>
+
+      <!-- Quick Links -->
+      <div>
+        <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+        <ul class="space-y-2">
+          <li><a routerLink="/about" class="hover:text-primary transition-colors">About Us</a></li>
+          <li><a routerLink="/hotels" class="hover:text-primary transition-colors">Browse Hotels</a></li>
+          <li><a routerLink="/contact" class="hover:text-primary transition-colors">Contact Us</a></li>
+          <li><a routerLink="/faq" class="hover:text-primary transition-colors">FAQs</a></li>
+        </ul>
+      </div>
+
+      <!-- Support -->
+      <div>
+        <h3 class="text-lg font-semibold mb-4">Support</h3>
+        <ul class="space-y-2">
+          <li><a routerLink="/privacy" class="hover:text-primary transition-colors">Privacy Policy</a></li>
+          <li><a routerLink="/terms" class="hover:text-primary transition-colors">Terms of Service</a></li>
+          <li><a routerLink="/cancellation" class="hover:text-primary transition-colors">Cancellation Policy</a></li>
+          <li><a routerLink="/help" class="hover:text-primary transition-colors">Help Center</a></li>
+        </ul>
+      </div>
+
+      <!-- Newsletter -->
+      <div>
+        <h3 class="text-lg font-semibold mb-4">Newsletter</h3>
+        <p class="text-sm mb-4 opacity-80">
+          Subscribe to get special offers and updates
+        </p>
+        <div class="flex gap-2">
+          <input type="email" placeholder="Your email"
+                 class="input input-bordered w-full max-w-xs" />
+          <button mat-raised-button color="primary" class="!rounded-lg">
+            <mat-icon>send</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Copyright -->
+    <div class="border-t border-base-300 pt-6 text-center text-sm opacity-70">
+      <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+        <div>
+          © 2025 SleepyTime. All rights reserved.
+        </div>
+        <div class="flex gap-4">
+          <a routerLink="/terms" class="hover:underline">Terms</a>
+          <a routerLink="/privacy" class="hover:underline">Privacy</a>
+          <a routerLink="/cookies" class="hover:underline">Cookies</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>

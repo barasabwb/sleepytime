@@ -1,0 +1,21 @@
+/* Custom navbar styles */
+nav {
+  transition: all 0.3s ease;
+}
+
+/* Mobile menu animation */
+[class*="mat-menu"] {
+  transition: all 0.3s ease;
+}
+
+/* Button hover effects */
+.mat-raised-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Active route styling */
+.active-route {
+  background-color: hsl(var(--p) / 0.2);
+  border-left: 3px solid hsl(var(--p));
+}

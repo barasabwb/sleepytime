@@ -1,0 +1,111 @@
+<div class="px-4 py-10 lg:py-16 bg-base-100 min-h-screen">
+  <!-- Search and Filter Section -->
+  <div class="max-w-7xl mx-auto mb-12">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-8">
+      <div>
+        <h1 class="text-4xl font-bold text-white mb-2">Find Your Perfect Stay</h1>
+        <p class="text-lg text-base-content/80">Browse our curated selection of premium hotels</p>
+      </div>
+
+      <div class="w-full md:w-auto">
+        <button mat-raised-button color="primary" class="!rounded-full" (click)="openFilters()">
+          <mat-icon>filter_alt</mat-icon>
+          <span class="ml-2">Filters</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="relative mb-8">
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Search hotels</mat-label>
+        <input matInput placeholder="Destination, hotel name or amenities" [(ngModel)]="searchQuery">
+        <mat-icon matPrefix>search</mat-icon>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="max-w-7xl mx-auto">
+    <!-- Results Info -->
+    <div class="flex justify-between items-center mb-6">
+      <p class="text-base-content/80">
+        Showing <span class="font-bold text-white">{{ filteredHotels.length }}</span> hotels
+        <span *ngIf="searchQuery">matching "{{ searchQuery }}"</span>
+      </p>
+      <mat-form-field appearance="outline" class="w-48">
+        <mat-label>Sort by</mat-label>
+        <mat-select [(value)]="sortOption">
+          <mat-option value="price-asc">Price: Low to High</mat-option>
+          <mat-option value="price-desc">Price: High to Low</mat-option>
+          <mat-option value="rating-desc">Rating: High to Low</mat-option>
+          <mat-option value="name-asc">Name: A-Z</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <!-- Hotels Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div *ngFor="let hotel of filteredHotels" class="card bg-base-200 hover:shadow-xl transition-all duration-300 h-full flex flex-col">
+        <!-- Hotel Image with Favorite Button -->
+        <figure class="relative">
+          <img [src]="hotel.image" [alt]="hotel.name" class="w-full h-64 object-cover rounded-t-2xl" />
+          <button mat-icon-button class="absolute top-2 right-2 bg-base-100/80 rounded-full" (click)="toggleFavorite(hotel)">
+            <mat-icon [class.text-red-500]="isFavorite(hotel)">favorite</mat-icon>
+          </button>
+          <div class="absolute bottom-2 left-2 badge badge-primary gap-2">
+            <mat-icon>star</mat-icon>
+            {{ hotel.rating }}
+          </div>
+        </figure>
+
+        <!-- Hotel Info -->
+        <div class="card-body flex-grow">
+          <div class="flex justify-between items-start">
+            <h2 class="card-title text-white">{{ hotel.name }}</h2>
+            <div class="badge badge-accent text-white" *ngIf="hotel.discount">
+              -{{ hotel.discount }}%
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2 text-base-content/80 mb-2">
+            <mat-icon class="text-sm">location_on</mat-icon>
+            <span>{{ hotel.location }}</span>
+          </div>
+
+          <div class="flex items-center gap-2 flex-wrap mb-4">
+            <span *ngFor="let amenity of hotel.topAmenities" class="badge badge-outline">
+              {{ amenity }}
+            </span>
+          </div>
+
+          <div class="mt-auto">
+            <div class="flex items-center gap-2">
+              <p class="text-2xl font-bold text-primary">${{ hotel.pricePerNight }}</p>
+              <p class="text-base-content/80">/ night</p>
+              <p class="text-sm line-through text-base-content/60 ml-2" *ngIf="hotel.originalPrice">
+                ${{ hotel.originalPrice }}
+              </p>
+            </div>
+
+            <div class="card-actions mt-4">
+              <button mat-raised-button color="primary" class="w-full" (click)="viewHotel(hotel.id)">
+                <mat-icon>visibility</mat-icon>
+                <span class="ml-2">View Details</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="flex justify-center mt-12" *ngIf="filteredHotels.length > itemsPerPage">
+      <mat-paginator [length]="filteredHotels.length"
+                    [pageSize]="itemsPerPage"
+                    [pageSizeOptions]="[12, 24, 48]"
+                    (page)="onPageChange($event)">
+      </mat-paginator>
+    </div>
+  </div>
+</div>

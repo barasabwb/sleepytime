@@ -1,0 +1,76 @@
+<div class="min-h-screen bg-base-200">
+      <!-- Navigation -->
+      <mat-toolbar class="bg-primary text-primary-content shadow-lg">
+        <span class="text-xl font-bold">SleepyTime</span>
+        <span class="flex-1"></span>
+        <a mat-button routerLink="/auth/login" class="text-primary-content">Login</a>
+        <a mat-button routerLink="/auth/register" class="text-primary-content">Register</a>
+      </mat-toolbar>
+
+      <!-- Hero Section -->
+      <div class="hero min-h-[80vh] bg-base-100">
+        <div class="hero-content text-center">
+          <div class="max-w-md">
+            <h1 class="text-5xl font-bold">Find Your Perfect Stay</h1>
+            <p class="py-6">Discover cozy hotels and book your dream vacation with SleepyTime. We offer the best accommodations at affordable prices.</p>
+            <button mat-raised-button color="primary" routerLink="/hotels">Browse Hotels</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Features Section -->
+      <div class="py-16 px-4 bg-base-200">
+        <div class="max-w-6xl mx-auto">
+          <h2 class="text-3xl font-bold text-center mb-12">Why Choose SleepyTime?</h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="card bg-base-100 shadow-xl">
+              <div class="card-body items-center text-center">
+                <div class="text-4xl mb-4">🏨</div>
+                <h3 class="card-title">Wide Selection</h3>
+                <p>Choose from hundreds of hotels across the country</p>
+              </div>
+            </div>
+            <div class="card bg-base-100 shadow-xl">
+              <div class="card-body items-center text-center">
+                <div class="text-4xl mb-4">💲</div>
+                <h3 class="card-title">Best Prices</h3>
+                <p>We guarantee the lowest prices for your stay</p>
+              </div>
+            </div>
+            <div class="card bg-base-100 shadow-xl">
+              <div class="card-body items-center text-center">
+                <div class="text-4xl mb-4">⭐</div>
+                <h3 class="card-title">Verified Reviews</h3>
+                <p>Read honest reviews from real guests</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <footer class="footer p-10 bg-neutral text-neutral-content">
+        <aside>
+          <span class="text-2xl font-bold">SleepyTime</span>
+          <p>Providing reliable hotel bookings since 2023</p>
+        </aside>
+        <nav>
+          <h6 class="footer-title">Services</h6>
+          <a class="link link-hover">Hotel Booking</a>
+          <a class="link link-hover">Room Selection</a>
+          <a class="link link-hover">Special Offers</a>
+        </nav>
+        <nav>
+          <h6 class="footer-title">Company</h6>
+          <a class="link link-hover">About us</a>
+          <a class="link link-hover">Contact</a>
+          <a class="link link-hover">Careers</a>
+        </nav>
+        <nav>
+          <h6 class="footer-title">Legal</h6>
+          <a class="link link-hover">Terms of use</a>
+          <a class="link link-hover">Privacy policy</a>
+          <a class="link link-hover">Cookie policy</a>
+        </nav>
+      </footer>
+    </div>
