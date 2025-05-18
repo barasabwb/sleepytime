@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -8,19 +8,12 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+
 import { UserRolePipe } from '../../shared/pipes/user-role.pipe';
 import { UserStatusPipe } from '../../shared/pipes/user-status.pipe';
-import { UserFormComponent } from '../user-form/user-form.component';
 
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: 'admin' | 'manager' | 'staff' | 'guest';
-  status: 'active' | 'suspended' | 'pending';
-  lastActive: Date;
-  createdAt: Date;
-}
+import { UserFormComponent } from '../user-form/user-form.component';
+import { UsersService, User } from '../../services/users.service';
 
 @Component({
   selector: 'app-user-management',
@@ -36,62 +29,50 @@ interface User {
     MatMenuModule,
     MatDialogModule,
     UserRolePipe,
-    UserStatusPipe
+    UserStatusPipe,
   ],
   templateUrl: './user-management.component.html',
-  styleUrls: ['./user-management.component.css']
+  styleUrls: ['./user-management.component.css'],
 })
-export class UserManagementComponent {
+export class UserManagementComponent implements OnInit {
   displayedColumns: string[] = ['name', 'email', 'role', 'status', 'lastActive', 'actions'];
-  users: User[] = [
-    {
-      id: '1',
-      name: 'Admin User',
-      email: 'admin@sleeptime.com',
-      role: 'admin',
-      status: 'active',
-      lastActive: new Date('2023-06-15'),
-      createdAt: new Date('2023-01-10')
-    },
-    {
-      id: '2',
-      name: 'Hotel Manager',
-      email: 'manager@example.com',
-      role: 'manager',
-      status: 'active',
-      lastActive: new Date('2023-06-14'),
-      createdAt: new Date('2023-02-15')
-    },
-    {
-      id: '3',
-      name: 'Front Desk',
-      email: 'staff@example.com',
-      role: 'staff',
-      status: 'active',
-      lastActive: new Date('2023-06-10'),
-      createdAt: new Date('2023-03-20')
-    },
-    {
-      id: '4',
-      name: 'John Guest',
-      email: 'guest@example.com',
-      role: 'guest',
-      status: 'active',
-      lastActive: new Date('2023-06-12'),
-      createdAt: new Date('2023-04-05')
-    }
-  ];
 
-  // Pagination
+  users: User[] = [];
   pageSize = 5;
   pageIndex = 0;
-  totalUsers = 20;
+  totalUsers = 0;
 
-  constructor(private dialog: MatDialog) {}
+  constructor(private dialog: MatDialog, private usersService: UsersService) {}
+
+  ngOnInit(): void {
+    this.loadUsers();
+  }
+
+  loadUsers(): void {
+    this.usersService.getAllUsers().subscribe({
+      next: (users) => {
+        this.users = users.map(u => ({
+          id: u.userId || (u as any)._id,
+          name: u.name,
+          email: u.email,
+          role: u.role as 'admin' | 'user',
+          status: u.status || 'active',  // Assuming backend sends status now or default to active
+          lastActive: new Date(), // placeholder
+          createdAt: new Date((u as any).createdAt),
+        }));
+        this.totalUsers = this.users.length;
+      },
+      error: (err) => {
+        console.error('Failed to load users', err);
+      }
+    });
+  }
 
   onPageChange(event: PageEvent): void {
     this.pageIndex = event.pageIndex;
     this.pageSize = event.pageSize;
+    // TODO: Add backend pagination support here if needed
+    this.loadUsers();
   }
 
   openUserForm(user?: User): void {
@@ -102,14 +83,38 @@ export class UserManagementComponent {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        // In real app: refresh user list
-        console.log('User saved', result);
+        if (user) {
+          // Editing existing user
+          this.usersService.updateUser(user.id!, result).subscribe({
+            next: (updatedUser) => {
+              this.loadUsers();
+            },
+            error: (err) => {
+              console.error('Failed to update user', err);
+              // Show error UI if you want
+            }
+          });
+        } else {
+          // TODO: handle create user if needed
+        }
       }
     });
   }
 
   updateUserStatus(userId: string, status: User['status']): void {
     const user = this.users.find(u => u.id === userId);
-    if (user) user.status = status;
+    if (!user) return;
+
+    const previousStatus = user.status;
+    user.status = status;
+
+    this.usersService.updateUser(userId, { status }).subscribe({
+      next: () => {
+        // optionally show success
+      },
+      error: () => {
+        user.status = previousStatus; // revert on error
+      }
+    });
   }
 }

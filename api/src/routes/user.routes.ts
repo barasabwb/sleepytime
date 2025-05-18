@@ -1,7 +1,7 @@
 // src/routes/user.routes.ts
 import { Router } from 'express';
 import { loginUser, registerUser} from '../controllers/user.controller';
-import { getUserProfile, updateUserProfile , getAllUsers} from '../controllers/user.controller';
+import { getUserProfile, updateUserProfile , getAllUsers, updateUserById} from '../controllers/user.controller';
 import { authenticateJWT } from '../middleware/auth.middleware';
 import { requireAdmin } from '../middleware/admin.middleware';
 
@@ -11,6 +11,7 @@ router.post('/register', registerUser);
 router.post('/login', loginUser);
 router.get('/profile', authenticateJWT, getUserProfile);
 router.put('/profile', authenticateJWT, updateUserProfile);
+router.put('/updateUser/:id', authenticateJWT, requireAdmin, updateUserById);
 router.get('/getAllUsers', authenticateJWT, requireAdmin, getAllUsers);
 
 export default router;

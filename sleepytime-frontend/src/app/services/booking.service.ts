@@ -2,13 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { BookingApiResponse } from '../models/booking.model';
-
-interface ApiBooking {
-  // your ApiBooking interface here same as before
-}
-
-
-
+import { SingleBookingApiResponse } from '../models/booking.model';
 @Injectable({
   providedIn: 'root'
 })
@@ -17,7 +11,7 @@ export class BookingService {
 
   constructor(private http: HttpClient) {}
 
-  getBookings(): Observable<BookingApiResponse> {
+  private getAuthHeaders(): HttpHeaders {
     let headers = {};
     if (typeof window !== 'undefined') {
       const token = localStorage.getItem('token');
@@ -27,19 +21,25 @@ export class BookingService {
         };
       }
     }
-    return this.http.get<BookingApiResponse>(this.apiUrl, { headers: new HttpHeaders(headers) });
+    return new HttpHeaders(headers);
+  }
+
+  getBookings(): Observable<BookingApiResponse> {
+    return this.http.get<BookingApiResponse>(this.apiUrl, { headers: this.getAuthHeaders() });
   }
 
   createBooking(bookingData: any): Observable<any> {
-    let headers = {};
-    if (typeof window !== 'undefined') {
-      const token = localStorage.getItem('token');
-      if (token) {
-        headers = {
-          Authorization: `Bearer ${token}`
-        };
-      }
-    }
-    return this.http.post<any>(this.apiUrl, bookingData, { headers: new HttpHeaders(headers) });
+    return this.http.post<any>(this.apiUrl, bookingData, { headers: this.getAuthHeaders() });
+  }
+
+  cancelBooking(bookingId: string): Observable<any> {
+    const cancelUrl = `${this.apiUrl}${bookingId}/cancel`;
+    return this.http.put<any>(cancelUrl, {}, { headers: this.getAuthHeaders() });
+  }
+
+  getBookingById(bookingId: string): Observable<SingleBookingApiResponse> {
+    console.log(bookingId);
+    const url = `${this.apiUrl}${bookingId}`;
+    return this.http.get<SingleBookingApiResponse>(url, { headers: this.getAuthHeaders() });
   }
 }

@@ -1,4 +1,3 @@
-// user-form.component.ts
 import { Component, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
@@ -7,7 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
-import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 
 @Component({
   selector: 'app-user-form',
@@ -20,7 +19,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
     MatInputModule,
     MatFormFieldModule,
     MatSelectModule,
-    MatDatepickerModule
+    MatNativeDateModule
   ],
   template: `
     <h2 mat-dialog-title>
@@ -43,18 +42,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
           <mat-label>Role</mat-label>
           <mat-select formControlName="role" required>
             <mat-option value="admin">Administrator</mat-option>
-            <mat-option value="manager">Manager</mat-option>
-            <mat-option value="staff">Staff</mat-option>
-            <mat-option value="guest">Guest</mat-option>
-          </mat-select>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>Status</mat-label>
-          <mat-select formControlName="status" required>
-            <mat-option value="active">Active</mat-option>
-            <mat-option value="suspended">Suspended</mat-option>
-            <mat-option value="pending">Pending</mat-option>
+            <mat-option value="user">User</mat-option>
           </mat-select>
         </mat-form-field>
       </form>
@@ -70,8 +58,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
         {{ data.user ? 'Update' : 'Create' }}
       </button>
     </mat-dialog-actions>
-  `,
-  styles: []
+  `
 })
 export class UserFormComponent {
   userForm: FormGroup;
@@ -85,11 +72,15 @@ export class UserFormComponent {
       name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       role: ['', Validators.required],
-      status: ['', Validators.required]
     });
 
     if (data.user) {
-      this.userForm.patchValue(data.user);
+      // Patch only relevant fields
+      this.userForm.patchValue({
+        name: data.user.name,
+        email: data.user.email,
+        role: data.user.role,
+      });
     }
   }
 

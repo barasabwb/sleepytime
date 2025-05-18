@@ -29,3 +29,28 @@ export interface ApiBooking {
 export interface BookingApiResponse {
   bookings: ApiBooking[];
 }
+
+
+export interface ApiRoom {
+  roomType: string;
+  pricePerNight: number;
+  maxGuests: number;
+}
+
+export interface ApiUser {
+  _id: string;
+  name: string;
+  email: string;
+}
+
+export interface ApiHotel {
+  _id: string;
+  name: string;
+  location: string;
+}
+
+
+
+export interface SingleBookingApiResponse {
+  booking: ApiBooking;
+}

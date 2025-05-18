@@ -1,123 +1,80 @@
-<div class="p-6">
-  <!-- Header -->
-  <div class="flex justify-between items-center mb-6">
-    <h1 class="text-2xl font-bold flex items-center gap-2">
-      <mat-icon>book_online</mat-icon>
-      Booking Management
-    </h1>
-    <div class="flex gap-2">
-      <button mat-stroked-button>
-        <mat-icon>filter_alt</mat-icon>
-        Filters
-      </button>
-      <button mat-stroked-button>
-        <mat-icon>download</mat-icon>
-        Export
-      </button>
-    </div>
-  </div>
+<div class="p-4">
+  <h2 class="text-xl font-semibold mb-4">Booking Management</h2>
 
-  <!-- Bookings Table -->
-  <mat-card>
-    <mat-card-content>
-      <table mat-table [dataSource]="bookings" class="w-full">
-        <!-- Booking ID Column -->
-        <ng-container matColumnDef="bookingId">
-          <th mat-header-cell *matHeaderCellDef>Booking ID</th>
-          <td mat-cell *matCellDef="let booking" class="font-mono">
-            {{ booking.id }}
-          </td>
-        </ng-container>
+  <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
 
-        <!-- Guest Column -->
-        <ng-container matColumnDef="guest">
-          <th mat-header-cell *matHeaderCellDef>Guest</th>
-          <td mat-cell *matCellDef="let booking">
-            <div class="font-medium">{{ booking.guestName }}</div>
-            <div class="text-xs text-gray-500">
-              {{ booking.roomType }}
-            </div>
-          </td>
-        </ng-container>
+  <table mat-table [dataSource]="bookings" class="mat-elevation-z2 w-full mt-4" *ngIf="!loading">
+    <!-- Hotel Column -->
+    <ng-container matColumnDef="hotel">
+      <th mat-header-cell *matHeaderCellDef> Hotel </th>
+      <td mat-cell *matCellDef="let booking"> {{ booking.hotelName || booking.hotel?.name }} </td>
+    </ng-container>
 
-        <!-- Hotel Column -->
-        <ng-container matColumnDef="hotel">
-          <th mat-header-cell *matHeaderCellDef>Hotel</th>
-          <td mat-cell *matCellDef="let booking">
-            <div class="flex items-center gap-2">
-              <mat-icon class="text-gray-500 !w-4 !h-4">hotel</mat-icon>
-              {{ booking.hotelName }}
-            </div>
-          </td>
-        </ng-container>
+    <!-- User Column -->
+    <ng-container matColumnDef="user">
+      <th mat-header-cell *matHeaderCellDef> User </th>
+      <td mat-cell *matCellDef="let booking"> {{ booking.userName || booking.user?.name }} </td>
+    </ng-container>
 
-        <!-- Dates Column -->
-        <ng-container matColumnDef="dates">
-          <th mat-header-cell *matHeaderCellDef>Dates</th>
-          <td mat-cell *matCellDef="let booking">
-            <div class="flex items-center gap-2">
-              <mat-icon class="text-gray-500 !w-4 !h-4">event</mat-icon>
-              {{ booking.checkIn | date:'shortDate' }} -
-              {{ booking.checkOut | date:'shortDate' }}
-              <span class="text-xs text-gray-500 ml-2">
-                ({{ (booking.checkOut.getTime() - booking.checkIn.getTime()) / (1000 * 60 * 60 * 24) }} nights)
-              </span>
-            </div>
-          </td>
-        </ng-container>
+    <!-- Check In -->
+    <ng-container matColumnDef="checkIn">
+      <th mat-header-cell *matHeaderCellDef> Check-In </th>
+      <td mat-cell *matCellDef="let booking"> {{ booking.checkIn | date }} </td>
+    </ng-container>
 
-        <!-- Amount Column -->
-        <ng-container matColumnDef="amount">
-          <th mat-header-cell *matHeaderCellDef>Amount</th>
-          <td mat-cell *matCellDef="let booking" class="font-medium">
-            ${{ booking.totalAmount }}
-          </td>
-        </ng-container>
+    <!-- Check Out -->
+    <ng-container matColumnDef="checkOut">
+      <th mat-header-cell *matHeaderCellDef> Check-Out </th>
+      <td mat-cell *matCellDef="let booking"> {{ booking.checkOut | date }} </td>
+    </ng-container>
+    <!-- Amount Paid Column -->
+  <ng-container matColumnDef="totalPrice">
+    <th mat-header-cell *matHeaderCellDef> Amount Paid </th>
+    <td mat-cell *matCellDef="let booking"> ${{ booking.totalPrice.toFixed(2) }} </td>
+  </ng-container>
 
-        <!-- Status Column -->
-        <ng-container matColumnDef="status">
-          <th mat-header-cell *matHeaderCellDef>Status</th>
-          <td mat-cell *matCellDef="let booking">
-            <span class="booking-status" [class]="booking.status">
-              {{ booking.status | bookingStatus }}
-            </span>
-          </td>
-        </ng-container>
+    <!-- Status -->
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef> Status </th>
+      <td mat-cell *matCellDef="let booking">
+        <span
+          [ngClass]="{
+            'text-green-600': booking.status === 'confirmed',
+            'text-yellow-600': booking.status === 'pending',
+            'text-red-500': booking.status === 'cancelled'
+          }"
+        >
+          {{ booking.status | titlecase }}
+        </span>
+      </td>
+    </ng-container>
 
-        <!-- Actions Column -->
-        <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef class="w-40">Actions</th>
-          <td mat-cell *matCellDef="let booking" class="flex gap-1">
-            <button
-            mat-icon-button
-            color="primary"
-            (click)="viewBookingDetails(booking)"
-            matTooltip="View Details">
-            <mat-icon>visibility</mat-icon>
-          </button>
-            <button
-              mat-icon-button
-              color="warn"
-              (click)="cancelBooking(booking.id)"
-              *ngIf="booking.status !== 'cancelled'"
-              matTooltip="Cancel Booking">
-              <mat-icon>cancel</mat-icon>
-            </button>
-          </td>
-        </ng-container>
+    <!-- Actions -->
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef> Actions </th>
+      <td mat-cell *matCellDef="let booking">
+      <button
+          mat-icon-button
+          color="primary"
+          (click)="viewBookingDetails(booking._id)"
+          matTooltip="View Details"
+        >
+          <mat-icon>visibility</mat-icon>
+        </button>
+        <button
+          mat-button
+          color="warn"
+          *ngIf="booking.status !== 'cancelled'"
+          (click)="cancelBooking(booking._id)"
+        >
+          Cancel
+        </button>
+      </td>
+    </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-      </table>
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
 
-      <mat-paginator
-        [length]="totalBookings"
-        [pageSize]="pageSize"
-        [pageIndex]="pageIndex"
-        [pageSizeOptions]="[5, 10, 25]"
-        (page)="onPageChange($event)"
-        class="mt-4">
-      </mat-paginator>
-    </mat-card-content>
-  </mat-card>
+  <p *ngIf="!loading && bookings.length === 0" class="text-gray-500 mt-4">No bookings found.</p>
 </div>

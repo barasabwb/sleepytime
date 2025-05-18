@@ -2,17 +2,21 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthService } from './auth.service';
-import { map } from 'rxjs/operators';  // <-- Make sure this import is here
+import { map } from 'rxjs/operators';
+
 export interface User {
-  userId: string;
+  userId?: string;
+  id?: string; // your backend uses _id
   name: string;
   email: string;
   role: string;
-  // add more fields as your backend provides
+  status?: string;
+  lastActive?: Date;
+  createdAt?: Date;
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UsersService {
   private readonly API_URL = 'http://localhost:5000/api/users';
@@ -25,29 +29,29 @@ export class UsersService {
     return { headers };
   }
 
-  // Get list of all users (admin only)
-
-
-
-getAllUsers(): Observable<User[]> {
-  return this.http.get<{ users: User[] }>(`${this.API_URL}/getallusers`, this.getAuthHeaders())
-    .pipe(
-      map((response: { users: User[] }) => response.users || [])
+  getAllUsers(): Observable<User[]> {
+    return this.http.get<{ users: User[] }>(`${this.API_URL}/getallusers`, this.getAuthHeaders()).pipe(
+      map((response) => response.users || [])
     );
-}
+  }
 
-  // Get single user by ID (admin or self)
   getUserById(userId: string): Observable<User> {
     return this.http.get<User>(`${this.API_URL}/${userId}`, this.getAuthHeaders());
   }
 
-  // Update user (admin or self)
-  updateUser(userId: string, data: Partial<User>): Observable<User> {
-    return this.http.put<User>(`${this.API_URL}/${userId}`, data, this.getAuthHeaders());
+  updateUser(id: string, userData: Partial<User>): Observable<User> {
+    return this.http.put<User>(`${this.API_URL}/updateuser/${id}`, userData, this.getAuthHeaders());
   }
 
-  // Delete user (admin only)
   deleteUser(userId: string): Observable<{ message: string }> {
     return this.http.delete<{ message: string }>(`${this.API_URL}/${userId}`, this.getAuthHeaders());
+  }
+
+  getUserProfile(): Observable<{ user: User }> {
+  return this.http.get<{ user: User }>(`${this.API_URL}/profile`, this.getAuthHeaders());
+}
+
+  updateUserProfile(userData: Partial<User>): Observable<User> {
+    return this.http.put<User>(`${this.API_URL}/profile`, userData, this.getAuthHeaders());
   }
 }

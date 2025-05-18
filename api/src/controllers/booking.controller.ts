@@ -81,6 +81,36 @@ export const createBooking = async (req: Request, res: Response) => {
   }
 };
 
+export const getBookingById = async (req: Request, res: Response) => {
+  const bookingId = req.params.id;
+  const userId = req.user?.userId;
+  const userRole = req.user?.role;
+
+  try {
+    // Find booking by ID, populate user and hotel info
+    const booking = await Booking.findById(bookingId)
+      .populate('user', 'name email')
+      .populate('hotel', 'name location');
+
+    if (!booking) {
+      return res.status(404).json({ message: 'Booking not found' });
+    }
+
+    // Authorization check: user can access only their own bookings, or admin can access any
+    const isOwner = booking.user._id.toString() === userId;
+    const isAdmin = userRole === 'admin';
+
+    if (!isOwner && !isAdmin) {
+      return res.status(403).json({ message: 'Not authorized to view this booking' });
+    }
+
+    res.json({ booking });
+  } catch (err) {
+    console.error('Error fetching booking:', err);
+    console.error('ID:', bookingId);
+    res.status(500).json({ message: 'Failed to retrieve booking' });
+  }
+};
 
 export const getAllBookings = async (req: Request, res: Response) => {
   try {

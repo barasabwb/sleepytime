@@ -1,82 +1,137 @@
-<div class="p-6 max-w-2xl">
-  <div class="flex justify-between items-start mb-4">
-    <h2 class="text-xl font-bold flex items-center gap-2">
-      <mat-icon>receipt_long</mat-icon>
-      Booking Details: {{ booking.id }}
-    </h2>
-    <button mat-icon-button (click)="close()">
+<div class="p-6 max-w-4xl mx-auto bg-gray-900 rounded-lg shadow-xl border border-gray-700">
+  <!-- Header -->
+  <div class="flex justify-between items-center mb-6">
+    <div class="flex items-center gap-3">
+      <mat-icon class="text-indigo-400 !w-8 !h-8">receipt_long</mat-icon>
+      <h2 class="text-2xl font-bold text-gray-100">
+        Booking #{{ booking._id }}
+      </h2>
+    </div>
+    <button mat-icon-button (click)="close()" class="text-gray-400 hover:text-gray-200">
       <mat-icon>close</mat-icon>
     </button>
   </div>
 
-  <mat-divider class="mb-4"></mat-divider>
+  <mat-divider class="mb-6 bg-gray-700"></mat-divider>
 
+  <!-- Main Content -->
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
     <!-- Guest Section -->
-    <div>
-      <h3 class="font-medium text-lg mb-2 flex items-center gap-2">
-        <mat-icon class="!w-5 !h-5">person</mat-icon>
-        Guest Information
-      </h3>
-      <div class="space-y-2">
-        <p><strong>Name:</strong> {{ booking.guestName }}</p>
-        <p><strong>Email:</strong> {{ booking.guestEmail }}</p>
-        <p><strong>Phone:</strong> {{ booking.guestPhone }}</p>
+    <div class="bg-gray-800 p-5 rounded-lg border border-gray-700">
+      <div class="flex items-center gap-2 mb-4">
+        <mat-icon class="text-indigo-400 !w-6 !h-6">person</mat-icon>
+        <h3 class="font-semibold text-lg text-gray-100">Guest Information</h3>
+      </div>
+      <div class="space-y-4">
+        <div class="flex items-start">
+          <mat-icon class="text-gray-500 !w-5 !h-5 mr-3 mt-0.5">person_outline</mat-icon>
+          <div>
+            <p class="text-sm text-gray-400">Name</p>
+            <p class="font-medium text-gray-100">{{ booking.user?.name || 'Not specified' }}</p>
+          </div>
+        </div>
+        <div class="flex items-start">
+          <mat-icon class="text-gray-500 !w-5 !h-5 mr-3 mt-0.5">email</mat-icon>
+          <div>
+            <p class="text-sm text-gray-400">Email</p>
+            <p class="font-medium text-gray-100">{{ booking.user?.email || 'Not specified' }}</p>
+          </div>
+        </div>
       </div>
     </div>
 
     <!-- Booking Section -->
-    <div>
-      <h3 class="font-medium text-lg mb-2 flex items-center gap-2">
-        <mat-icon class="!w-5 !h-5">event</mat-icon>
-        Stay Details
-      </h3>
-      <div class="space-y-2">
-        <p><strong>Hotel:</strong> {{ booking.hotelName }}</p>
-        <p><strong>Room:</strong> {{ booking.roomType }}</p>
-        <p><strong>Dates:</strong> {{ booking.checkIn | date }} - {{ booking.checkOut | date }}</p>
-        <p><strong>Nights:</strong> {{ (booking.checkOut.getTime() - booking.checkIn.getTime()) / (1000 * 60 * 60 * 24) }}</p>
+    <div class="bg-gray-800 p-5 rounded-lg border border-gray-700">
+      <div class="flex items-center gap-2 mb-4">
+        <mat-icon class="text-indigo-400 !w-6 !h-6">event</mat-icon>
+        <h3 class="font-semibold text-lg text-gray-100">Stay Details</h3>
+      </div>
+      <div class="space-y-4">
+        <div class="flex items-start">
+          <mat-icon class="text-gray-500 !w-5 !h-5 mr-3 mt-0.5">hotel</mat-icon>
+          <div>
+            <p class="text-sm text-gray-400">Hotel</p>
+            <p class="font-medium text-gray-100">{{ booking.hotel?.name || 'Not specified' }}</p>
+          </div>
+        </div>
+        <div class="flex items-start">
+          <mat-icon class="text-gray-500 !w-5 !h-5 mr-3 mt-0.5">king_bed</mat-icon>
+          <div>
+            <p class="text-sm text-gray-400">Room Type</p>
+            <p class="font-medium text-gray-100">{{ booking.room?.roomType || 'Not specified' }}</p>
+          </div>
+        </div>
+        <div class="flex items-start">
+          <mat-icon class="text-gray-500 !w-5 !h-5 mr-3 mt-0.5">calendar_today</mat-icon>
+          <div>
+            <p class="text-sm text-gray-400">Dates</p>
+            <p class="font-medium text-gray-100">
+              {{ booking.checkIn | date:'mediumDate' }} - {{ booking.checkOut | date:'mediumDate' }}
+              <span class="text-sm text-gray-400 block">({{ getNights(booking.checkIn, booking.checkOut) }} nights)</span>
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
-  <mat-divider class="my-4"></mat-divider>
+  <mat-divider class="my-6 bg-gray-700"></mat-divider>
 
   <!-- Payment Section -->
-  <div>
-    <h3 class="font-medium text-lg mb-2 flex items-center gap-2">
-      <mat-icon class="!w-5 !h-5">payments</mat-icon>
-      Payment Information
-    </h3>
-    <div class="space-y-2">
-      <p><strong>Status:</strong> <span class="booking-status" [class]="booking.status">{{ booking.status | bookingStatus }}</span></p>
-      <p><strong>Total:</strong> ${{ booking.totalAmount }}</p>
-      <p><strong>Method:</strong> {{ booking.paymentMethod }}</p>
+  <div class="bg-gray-800 p-5 rounded-lg border border-gray-700 mb-6">
+    <div class="flex items-center gap-2 mb-4">
+      <mat-icon class="text-indigo-400 !w-6 !h-6">payments</mat-icon>
+      <h3 class="font-semibold text-lg text-gray-100">Payment Information</h3>
+    </div>
+    <div class="space-y-4">
+      <div class="flex items-start">
+        <mat-icon class="text-gray-500 !w-5 !h-5 mr-3 mt-0.5">credit_card</mat-icon>
+        <div>
+          <p class="text-sm text-gray-400">Status</p>
+          <p class="font-medium">
+            <span class="px-3 py-1 rounded-full text-sm"
+                  [ngClass]="{
+                    'bg-green-900 text-green-300': booking.status === 'confirmed',
+                    'bg-yellow-900 text-yellow-300': booking.status === 'pending',
+                    'bg-red-900 text-red-300': booking.status === 'cancelled'
+                  }">
+              {{ booking.status | bookingStatus }}
+            </span>
+          </p>
+        </div>
+      </div>
+      <div class="flex items-start">
+        <mat-icon class="text-gray-500 !w-5 !h-5 mr-3 mt-0.5">attach_money</mat-icon>
+        <div>
+          <p class="text-sm text-gray-400">Total Amount</p>
+          <p class="font-medium text-lg text-indigo-400">${{ booking.totalPrice | number:'1.2-2' }}</p>
+        </div>
+      </div>
     </div>
   </div>
 
-  <mat-divider class="my-4"></mat-divider>
-
   <!-- Special Requests -->
-  @if (booking.specialRequests) {
-    <div>
-      <h3 class="font-medium text-lg mb-2 flex items-center gap-2">
-        <mat-icon class="!w-5 !h-5">notes</mat-icon>
-        Special Requests
-      </h3>
-      <p class="whitespace-pre-line">{{ booking.specialRequests }}</p>
+  <ng-container *ngIf="booking.specialRequests">
+    <div class="bg-gray-800 p-5 rounded-lg border border-gray-700 mb-6">
+      <div class="flex items-center gap-2 mb-3">
+        <mat-icon class="text-indigo-400 !w-6 !h-6">notes</mat-icon>
+        <h3 class="font-semibold text-lg text-gray-100">Special Requests</h3>
+      </div>
+      <div class="bg-gray-700 p-4 rounded border border-gray-600">
+        <p class="whitespace-pre-line text-gray-300">{{ booking.specialRequests }}</p>
+      </div>
     </div>
-    <mat-divider class="my-4"></mat-divider>
-  }
+    <mat-divider class="my-6 bg-gray-700"></mat-divider>
+  </ng-container>
 
   <!-- Actions -->
-  <div class="flex justify-end gap-2 mt-4">
-    <button mat-stroked-button (click)="print()">
+  <div class="flex justify-end gap-3">
+    <button mat-stroked-button (click)="print()" class="!px-6 flex items-center gap-2 !text-gray-300 !border-gray-600 hover:!bg-gray-700">
       <mat-icon>print</mat-icon>
-      Print
+      Print Receipt
     </button>
-    <button mat-raised-button color="primary" (click)="close()">
-      Close
+    <button mat-raised-button color="primary" (click)="close()" class="!px-6 !bg-indigo-600 hover:!bg-indigo-500">
+      Close Details
     </button>
   </div>
 </div>
