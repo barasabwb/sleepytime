@@ -1,76 +1,80 @@
-<div class="min-h-screen bg-base-200">
-      <!-- Navigation -->
-      <mat-toolbar class="bg-primary text-primary-content shadow-lg">
-        <span class="text-xl font-bold">SleepyTime</span>
-        <span class="flex-1"></span>
-        <a mat-button routerLink="/auth/login" class="text-primary-content">Login</a>
-        <a mat-button routerLink="/auth/register" class="text-primary-content">Register</a>
-      </mat-toolbar>
-
-      <!-- Hero Section -->
-      <div class="hero min-h-[80vh] bg-base-100">
-        <div class="hero-content text-center">
-          <div class="max-w-md">
-            <h1 class="text-5xl font-bold">Find Your Perfect Stay</h1>
-            <p class="py-6">Discover cozy hotels and book your dream vacation with SleepyTime. We offer the best accommodations at affordable prices.</p>
-            <button mat-raised-button color="primary" routerLink="/hotels">Browse Hotels</button>
-          </div>
-        </div>
+<div class="p-6">
+      <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold flex items-center gap-2">
+          <mat-icon>hotel</mat-icon>
+          Hotel Management
+        </h1>
+        <button
+  mat-raised-button
+  color="primary"
+  (click)="openAddHotelModal()">
+  <mat-icon>add</mat-icon>
+  Add Hotel
+</button>
       </div>
 
-      <!-- Features Section -->
-      <div class="py-16 px-4 bg-base-200">
-        <div class="max-w-6xl mx-auto">
-          <h2 class="text-3xl font-bold text-center mb-12">Why Choose SleepyTime?</h2>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div class="card bg-base-100 shadow-xl">
-              <div class="card-body items-center text-center">
-                <div class="text-4xl mb-4">🏨</div>
-                <h3 class="card-title">Wide Selection</h3>
-                <p>Choose from hundreds of hotels across the country</p>
-              </div>
-            </div>
-            <div class="card bg-base-100 shadow-xl">
-              <div class="card-body items-center text-center">
-                <div class="text-4xl mb-4">💲</div>
-                <h3 class="card-title">Best Prices</h3>
-                <p>We guarantee the lowest prices for your stay</p>
-              </div>
-            </div>
-            <div class="card bg-base-100 shadow-xl">
-              <div class="card-body items-center text-center">
-                <div class="text-4xl mb-4">⭐</div>
-                <h3 class="card-title">Verified Reviews</h3>
-                <p>Read honest reviews from real guests</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <mat-card>
+        <mat-card-content>
+          <div class="overflow-x-auto">
+            <table mat-table [dataSource]="hotels" class="w-full">
+              <!-- Name Column -->
+              <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef>Hotel Name</th>
+                <td mat-cell *matCellDef="let hotel">
+                  <div class="font-medium">{{ hotel.name }}</div>
+                  <div class="text-sm text-gray-500">
+                    {{ getServiceNames(hotel.services) }}
+                  </div>
+                </td>
+              </ng-container>
 
-      <!-- Footer -->
-      <footer class="footer p-10 bg-neutral text-neutral-content">
-        <aside>
-          <span class="text-2xl font-bold">SleepyTime</span>
-          <p>Providing reliable hotel bookings since 2023</p>
-        </aside>
-        <nav>
-          <h6 class="footer-title">Services</h6>
-          <a class="link link-hover">Hotel Booking</a>
-          <a class="link link-hover">Room Selection</a>
-          <a class="link link-hover">Special Offers</a>
-        </nav>
-        <nav>
-          <h6 class="footer-title">Company</h6>
-          <a class="link link-hover">About us</a>
-          <a class="link link-hover">Contact</a>
-          <a class="link link-hover">Careers</a>
-        </nav>
-        <nav>
-          <h6 class="footer-title">Legal</h6>
-          <a class="link link-hover">Terms of use</a>
-          <a class="link link-hover">Privacy policy</a>
-          <a class="link link-hover">Cookie policy</a>
-        </nav>
-      </footer>
+              <!-- Location Column -->
+              <ng-container matColumnDef="location">
+                <th mat-header-cell *matHeaderCellDef>Location</th>
+                <td mat-cell *matCellDef="let hotel">
+                  <div class="flex items-center gap-2">
+                    <mat-icon class="text-gray-500">location_on</mat-icon>
+                    {{ hotel.location }}
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Rating Column -->
+              <ng-container matColumnDef="rating">
+                <th mat-header-cell *matHeaderCellDef>Rating</th>
+                <td mat-cell *matCellDef="let hotel">
+                  <div class="flex items-center gap-1">
+                    <span class="font-medium">{{ hotel.rating }}</span>
+                    <mat-icon class="text-amber-500 !w-5 !h-5">star</mat-icon>
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Actions Column -->
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef class="w-32">Actions</th>
+                <td mat-cell *matCellDef="let hotel" class="flex gap-1">
+                  <button
+                    mat-icon-button
+                    color="primary"
+                    [routerLink]="['/admin/hotels/edit', hotel.id]"
+                    matTooltip="Edit">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button
+                    mat-icon-button
+                    color="warn"
+                    (click)="deleteHotel(hotel.id)"
+                    matTooltip="Delete">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            </table>
+          </div>
+        </mat-card-content>
+      </mat-card>
     </div>

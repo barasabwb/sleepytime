@@ -65,7 +65,7 @@ export const listHotels = async (req: Request, res: Response) => {
     minPrice,
     maxPrice,
     page = 1,
-    limit = 10,
+    limit = 0,
     sortBy = 'name',
     sortOrder = 'asc'
   } = req.query;

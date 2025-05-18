@@ -1,0 +1,31 @@
+/* Status chips */
+mat-chip.published {
+  background-color: #e6f6e6;
+  color: #2e7d32;
+}
+
+mat-chip.pending {
+  background-color: #fff8e6;
+  color: #ff8f00;
+}
+
+mat-chip.rejected {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+/* Table styles */
+table {
+  width: 100%;
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.mat-mdc-row:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}

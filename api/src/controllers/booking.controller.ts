@@ -5,9 +5,8 @@ import { isDateOverlap } from '../utils/dateOverlap';
 
 export const createBooking = async (req: Request, res: Response) => {
   const userId = req.user?.userId;
- 
 
-  const { hotelId, roomType, checkIn, checkOut } = req.body;
+  const { hotelId, roomType, checkIn, checkOut, guests } = req.body;
 
   try {
     // Validate hotel and room
@@ -17,7 +16,18 @@ export const createBooking = async (req: Request, res: Response) => {
     const room = hotel.rooms.find(r => r.roomType === roomType);
     if (!room) return res.status(404).json({ message: 'Room type not found' });
 
-    // Calculate days and total price
+    // Validate guests
+    if (!guests || typeof guests !== 'number' || guests <= 0) {
+      return res.status(400).json({ message: 'Invalid number of guests' });
+    }
+
+    if (guests > room.maxGuests) {
+      return res.status(400).json({
+        message: `Selected room can accommodate a maximum of ${room.maxGuests} guests`
+      });
+    }
+
+    // Calculate duration
     const checkInDate = new Date(checkIn);
     const checkOutDate = new Date(checkOut);
     const nights = Math.ceil((checkOutDate.getTime() - checkInDate.getTime()) / (1000 * 60 * 60 * 24));
@@ -25,22 +35,24 @@ export const createBooking = async (req: Request, res: Response) => {
     if (nights <= 0) {
       return res.status(400).json({ message: 'Invalid check-in/check-out dates' });
     }
+
+    // Check availability
     const overlappingCount = await Booking.countDocuments({
-    hotel: hotelId,
-    'room.roomType': roomType,
-    status: 'confirmed',
-    $or: [
+      hotel: hotelId,
+      'room.roomType': roomType,
+      status: 'confirmed',
+      $or: [
         {
-        checkIn: { $lt: new Date(checkOut) },
-        checkOut: { $gt: new Date(checkIn) },
+          checkIn: { $lt: checkOutDate },
+          checkOut: { $gt: checkInDate },
         },
-    ],
+      ],
     });
 
     if (overlappingCount >= room.quantity) {
-    return res
-        .status(400)
-        .json({ message: 'No available rooms of this type for the selected dates' });
+      return res.status(400).json({
+        message: 'No available rooms of this type for the selected dates'
+      });
     }
 
     const totalPrice = nights * room.pricePerNight;
@@ -56,6 +68,7 @@ export const createBooking = async (req: Request, res: Response) => {
       },
       checkIn: checkInDate,
       checkOut: checkOutDate,
+      guests,
       totalPrice,
       status: 'confirmed'
     });
@@ -67,6 +80,7 @@ export const createBooking = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Failed to create booking' });
   }
 };
+
 
 export const getAllBookings = async (req: Request, res: Response) => {
   try {

@@ -6,7 +6,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
 import { RouterLink } from '@angular/router';
-
+import { AuthService } from '../../services/auth.service';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-navbar',
   standalone: true,
@@ -24,13 +25,21 @@ import { RouterLink } from '@angular/router';
 })
 export class NavbarComponent {
   mobileMenuOpen = false;
+  constructor(private authService: AuthService, private router: Router) {}
+  isAuthenticated = false;
 
+
+  ngOnInit(): void {
+    this.isAuthenticated = this.authService.isLoggedIn();
+  }
   toggleMobileMenu() {
     this.mobileMenuOpen = !this.mobileMenuOpen;
   }
 
   logout() {
     // Implement your logout logic here
-    console.log('User logged out');
+    console.log("hello");
+    this.authService.logout();
+    this.router.navigate(['/']); // Redirect to landing page or login
   }
 }

@@ -1,0 +1,24 @@
+.booking-status {
+  @apply px-3 py-1 rounded-full text-xs font-medium;
+
+  &.confirmed {
+    @apply bg-green-100 text-green-800;
+  }
+  &.cancelled {
+    @apply bg-red-100 text-red-800;
+  }
+  &.pending {
+    @apply bg-amber-100 text-amber-800;
+  }
+  &.completed {
+    @apply bg-blue-100 text-blue-800;
+  }
+}
+
+table {
+  width: 100%;
+}
+
+.mat-mdc-row:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}

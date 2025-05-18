@@ -1,0 +1,82 @@
+<div class="p-6 max-w-2xl">
+  <div class="flex justify-between items-start mb-4">
+    <h2 class="text-xl font-bold flex items-center gap-2">
+      <mat-icon>receipt_long</mat-icon>
+      Booking Details: {{ booking.id }}
+    </h2>
+    <button mat-icon-button (click)="close()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-divider class="mb-4"></mat-divider>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Guest Section -->
+    <div>
+      <h3 class="font-medium text-lg mb-2 flex items-center gap-2">
+        <mat-icon class="!w-5 !h-5">person</mat-icon>
+        Guest Information
+      </h3>
+      <div class="space-y-2">
+        <p><strong>Name:</strong> {{ booking.guestName }}</p>
+        <p><strong>Email:</strong> {{ booking.guestEmail }}</p>
+        <p><strong>Phone:</strong> {{ booking.guestPhone }}</p>
+      </div>
+    </div>
+
+    <!-- Booking Section -->
+    <div>
+      <h3 class="font-medium text-lg mb-2 flex items-center gap-2">
+        <mat-icon class="!w-5 !h-5">event</mat-icon>
+        Stay Details
+      </h3>
+      <div class="space-y-2">
+        <p><strong>Hotel:</strong> {{ booking.hotelName }}</p>
+        <p><strong>Room:</strong> {{ booking.roomType }}</p>
+        <p><strong>Dates:</strong> {{ booking.checkIn | date }} - {{ booking.checkOut | date }}</p>
+        <p><strong>Nights:</strong> {{ (booking.checkOut.getTime() - booking.checkIn.getTime()) / (1000 * 60 * 60 * 24) }}</p>
+      </div>
+    </div>
+  </div>
+
+  <mat-divider class="my-4"></mat-divider>
+
+  <!-- Payment Section -->
+  <div>
+    <h3 class="font-medium text-lg mb-2 flex items-center gap-2">
+      <mat-icon class="!w-5 !h-5">payments</mat-icon>
+      Payment Information
+    </h3>
+    <div class="space-y-2">
+      <p><strong>Status:</strong> <span class="booking-status" [class]="booking.status">{{ booking.status | bookingStatus }}</span></p>
+      <p><strong>Total:</strong> ${{ booking.totalAmount }}</p>
+      <p><strong>Method:</strong> {{ booking.paymentMethod }}</p>
+    </div>
+  </div>
+
+  <mat-divider class="my-4"></mat-divider>
+
+  <!-- Special Requests -->
+  @if (booking.specialRequests) {
+    <div>
+      <h3 class="font-medium text-lg mb-2 flex items-center gap-2">
+        <mat-icon class="!w-5 !h-5">notes</mat-icon>
+        Special Requests
+      </h3>
+      <p class="whitespace-pre-line">{{ booking.specialRequests }}</p>
+    </div>
+    <mat-divider class="my-4"></mat-divider>
+  }
+
+  <!-- Actions -->
+  <div class="flex justify-end gap-2 mt-4">
+    <button mat-stroked-button (click)="print()">
+      <mat-icon>print</mat-icon>
+      Print
+    </button>
+    <button mat-raised-button color="primary" (click)="close()">
+      Close
+    </button>
+  </div>
+</div>

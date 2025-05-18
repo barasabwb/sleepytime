@@ -1,0 +1,24 @@
+/* user-dashboard.component.css */
+.mat-mdc-tab-group {
+  --mdc-tab-indicator-active-indicator-color: theme('colors.primary.600');
+  --mat-tab-header-active-label-text-color: theme('colors.primary.600');
+  --mat-tab-header-active-ripple-color: theme('colors.primary.600');
+  --mat-tab-header-inactive-ripple-color: theme('colors.gray.300');
+}
+
+.mat-mdc-tab:not(.mdc-tab--active) {
+  opacity: 0.8;
+}
+
+.mat-mdc-card {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .mat-mdc-tab-header {
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+}

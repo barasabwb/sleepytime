@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { SidebarComponent } from '../sidebar/sidebar.component'; // adjust path if needed
 import { FooterComponent } from '../footer/footer.component'; // adjust path if needed
+import { NavbarComponent } from '../navbar/navbar.component'; // Import NavbarComponent
 
 @Component({
   selector: 'app-user-layout',

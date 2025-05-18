@@ -9,15 +9,8 @@ import { CommonModule } from '@angular/common';
   templateUrl: './footer.component.html',
   styleUrls: ['./footer.component.css']
 })
-export class FooterComponent implements AfterViewInit {
+export class FooterComponent{
   @ViewChild('footerRef') footerRef!: ElementRef;
 
-  ngAfterViewInit(): void {
-    gsap.from(this.footerRef.nativeElement, {
-      opacity: 0,
-      y: 50,
-      duration: 1,
-      ease: 'power2.out'
-    });
-  }
+
 }

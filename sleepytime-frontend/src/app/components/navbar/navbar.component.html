@@ -13,17 +13,17 @@
           <mat-icon>home</mat-icon>
           <span class="ml-2">Home</span>
         </button>
-        <button mat-raised-button color="primary" class="!rounded-full" routerLink="/hotels">
+        <button mat-raised-button color="primary" class="!rounded-full" routerLink="/hotels" *ngIf="isAuthenticated">
           <mat-icon>hotel</mat-icon>
           <span class="ml-2">Browse Hotels</span>
         </button>
-        <button mat-raised-button color="accent" class="!rounded-full" routerLink="/bookings">
+        <!-- <button mat-raised-button color="accent" class="!rounded-full" routerLink="/bookings">
           <mat-icon>event_available</mat-icon>
           <span class="ml-2">Book Now</span>
-        </button>
+        </button> -->
 
         <!-- User Menu -->
-        <button mat-icon-button [matMenuTriggerFor]="userMenu" class="ml-4">
+        <button mat-icon-button [matMenuTriggerFor]="userMenu" class="ml-4" *ngIf="isAuthenticated">
           <mat-icon class="text-primary">account_circle</mat-icon>
         </button>
         <mat-menu #userMenu="matMenu">
@@ -53,7 +53,7 @@
   </div>
 
   <!-- Mobile Menu -->
-  <div class="md:hidden" [class.hidden]="!mobileMenuOpen">
+  <div class="md:hidden" *ngIf="isAuthenticated" [class.hidden]="!mobileMenuOpen">
     <div class="px-2 pt-2 pb-3 space-y-1 bg-base-100">
       <button mat-button color="primary" class="w-full !justify-start" routerLink="/" (click)="mobileMenuOpen = false">
         <mat-icon>home</mat-icon>

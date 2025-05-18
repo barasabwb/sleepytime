@@ -1,9 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterLink } from '@angular/router';
-
+import { AuthModalComponent } from '../../shared/components/auth-modal/auth-modal.component';
+import { AuthService } from '../../services/auth.service'; // Add this
+import { HotelsService } from '../../services/hotels.service';
+import { Hotel } from '../../models/hotel.model';
 @Component({
   selector: 'app-landing-page',
   standalone: true,
@@ -11,54 +14,57 @@ import { RouterLink } from '@angular/router';
     CommonModule,
     MatIconModule,
     MatButtonModule,
-    RouterLink
+    RouterLink,
+    AuthModalComponent,
   ],
   templateUrl: './landing.component.html',
   styleUrls: ['./landing.component.css']
 })
-export class LandingComponent {
-  topHotels = [
-    {
-      name: 'Grand Plaza Hotel',
-      location: 'New York, USA',
-      rating: 4.8,
-      price: 249,
-      image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=2070&auto=format&fit=crop'
-    },
-    {
-      name: 'Tropical Paradise Resort',
-      location: 'Bali, Indonesia',
-      rating: 4.9,
-      price: 189,
-      image: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?q=80&w=2070&auto=format&fit=crop'
-    },
-    {
-      name: 'Mountain View Lodge',
-      location: 'Swiss Alps, Switzerland',
-      rating: 4.7,
-      price: 320,
-      image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?q=80&w=2070&auto=format&fit=crop'
-    }
-  ];
+export class LandingComponent implements OnInit {
+  @ViewChild('authModal') authModal!: AuthModalComponent;
 
-  testimonials = [
-    {
-      name: 'Sarah Johnson',
-      avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
-      comment: 'The booking process was seamless and the hotel exceeded all expectations. Will definitely use Sleepytime again!',
-      rating: 5
-    },
-    {
-      name: 'Michael Chen',
-      avatar: 'https://randomuser.me/api/portraits/men/32.jpg',
-      comment: 'Found an amazing deal on a luxury hotel through Sleepytime. Customer service was excellent throughout.',
-      rating: 5
-    },
-    {
-      name: 'Emma Williams',
-      avatar: 'https://randomuser.me/api/portraits/women/68.jpg',
-      comment: 'Love how easy it is to compare hotels and prices. Saved me hours of research!',
-      rating: 4
-    }
-  ];
+  isAuthenticated = false;
+topHotels: Hotel[] = [];
+  constructor(private authService: AuthService,private hotelsService: HotelsService) {}
+
+
+
+
+  ngOnInit(): void {
+    this.isAuthenticated = this.authService.isLoggedIn();
+     this.hotelsService.getTopHotels().subscribe(response => {
+      this.topHotels = response.hotels;
+    });
+  }
+ getCheapestRoomPrice(hotel: Hotel): number {
+    if (!hotel.rooms || hotel.rooms.length === 0) return 0;
+    return Math.min(...hotel.rooms.map(room => room.pricePerNight));
+  }
+
+  // Helper to count different room types
+  getRoomTypesCount(hotel: Hotel): number {
+    if (!hotel.rooms) return 0;
+    return new Set(hotel.rooms.map(room => room.roomType)).size;
+  }
+
+  // Example method to determine special deals
+  hasSpecialDeal(hotel: Hotel): boolean {
+    // Implement your logic for special deals
+    // For example, check if any room has a discount
+    return hotel.rooms?.some(room =>
+      room.pricePerNight < this.getOriginalPriceForRoom(room)
+    ) ?? false;
+  }
+
+  // Helper to get original price (example implementation)
+  private getOriginalPriceForRoom(room: any): number {
+    // This would come from your backend or calculations
+    return room.pricePerNight * 1.2; // Example 20% discount
+  }
+  openAuthModal(mode: 'login' | 'register') {
+    this.authModal.openModal(mode);
+  }
+
+
+
 }

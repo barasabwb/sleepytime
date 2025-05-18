@@ -1,9 +1,35 @@
-/* Just a simple clean style */
-img {
-  object-fit: cover;
-  max-height: 400px;
+/* Custom card styles */
+.card {
+  transition: all 0.3s ease;
+  border-radius: 1rem;
 }
 
-button {
-  cursor: pointer;
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Button styles */
+.mat-mdc-raised-button {
+  height: 48px !important;
+  border-radius: 9999px !important;
+}
+
+/* Amenity icons */
+.mat-icon {
+  width: 24px !important;
+  height: 24px !important;
+  font-size: 24px !important;
+}
+
+/* Review stars */
+.text-warn {
+  color: hsl(var(--wa)) !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .sticky {
+    position: static !important;
+  }
 }

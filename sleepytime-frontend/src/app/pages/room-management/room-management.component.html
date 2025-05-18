@@ -1,0 +1,104 @@
+<div class="p-6">
+  <!-- Header with back button -->
+  <div class="flex items-center gap-4 mb-6">
+    <button mat-icon-button routerLink="/admin/hotels">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h1 class="text-2xl font-bold">
+      Room Management - {{ hotelName }}
+    </h1>
+  </div>
+
+  <!-- Action Bar -->
+  <div class="flex justify-between items-center mb-4">
+    <button
+      mat-raised-button
+      color="primary"
+      >
+      <mat-icon>add</mat-icon>
+      Add Room
+    </button>
+  </div>
+
+  <!-- Rooms Table -->
+  <mat-card>
+    <mat-card-content>
+      <table mat-table [dataSource]="rooms" class="w-full">
+        <!-- Type Column -->
+        <ng-container matColumnDef="type">
+          <th mat-header-cell *matHeaderCellDef>Room Type</th>
+          <td mat-cell *matCellDef="let room" class="font-medium">
+            {{ room.type }}
+            <div class="text-xs text-gray-500">
+              {{ room.amenities.join(', ') }}
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Price Column -->
+        <ng-container matColumnDef="price">
+          <th mat-header-cell *matHeaderCellDef>Price</th>
+          <td mat-cell *matCellDef="let room">
+            ${{ room.price }} <span class="text-gray-500">/night</span>
+          </td>
+        </ng-container>
+
+        <!-- Capacity Column -->
+        <ng-container matColumnDef="capacity">
+          <th mat-header-cell *matHeaderCellDef>Capacity</th>
+          <td mat-cell *matCellDef="let room">
+            <div class="flex items-center gap-1">
+              <mat-icon class="!w-4 !h-4">person</mat-icon>
+              {{ room.capacity }}
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Status Column -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let room">
+            <span [ngClass]="{
+              'badge badge-success': room.status === 'available',
+              'badge badge-warning': room.status === 'booked',
+              'badge badge-error': room.status === 'maintenance'
+            }">
+              {{ room.status | titlecase }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef class="w-40">Actions</th>
+          <td mat-cell *matCellDef="let room" class="flex gap-1">
+            <button
+              mat-icon-button
+              color="primary"
+
+              matTooltip="Edit">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              color="accent"
+              (click)="viewBookings(room.id)"
+              matTooltip="View Bookings">
+              <mat-icon>calendar_today</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              color="warn"
+              (click)="deleteRoom(room.id)"
+              matTooltip="Delete">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </mat-card-content>
+  </mat-card>
+</div>

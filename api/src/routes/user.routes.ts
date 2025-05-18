@@ -11,6 +11,6 @@ router.post('/register', registerUser);
 router.post('/login', loginUser);
 router.get('/profile', authenticateJWT, getUserProfile);
 router.put('/profile', authenticateJWT, updateUserProfile);
-router.put('/getAllUsers',requireAdmin, authenticateJWT, getAllUsers);
+router.get('/getAllUsers', authenticateJWT, requireAdmin, getAllUsers);
 
 export default router;

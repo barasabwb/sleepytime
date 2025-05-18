@@ -7,8 +7,10 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDialog, MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { HotelsService } from '../../services/hotels.service';
+import { Hotel } from '../../models/hotel.model';
 
 @Component({
   selector: 'app-browse-hotels',
@@ -22,63 +24,59 @@ import { FormsModule } from '@angular/forms';
     MatSelectModule,
     MatDialogModule,
     MatPaginatorModule,
-    FormsModule
+    FormsModule,
+    RouterModule
   ],
   templateUrl: './browse-hotels.component.html',
   styleUrls: ['./browse-hotels.component.css']
 })
 export class BrowseHotelsComponent {
-  hotels = [
-    {
-      id: 1,
-      name: 'Grand Plaza Hotel',
-      location: 'New York, USA',
-      rating: 4.8,
-      pricePerNight: 249,
-      originalPrice: 299,
-      discount: 17,
-      image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=2070&auto=format&fit=crop',
-      amenities: ['Free WiFi', 'Pool', 'Spa', 'Gym', 'Restaurant'],
-      topAmenities: ['Pool', 'Spa', 'Gym']
-    },
-    {
-      id: 2,
-      name: 'Tropical Paradise Resort',
-      location: 'Bali, Indonesia',
-      rating: 4.9,
-      pricePerNight: 189,
-      image: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?q=80&w=2070&auto=format&fit-crop',
-      amenities: ['Free WiFi', 'Beachfront', 'Spa', 'Restaurant', 'Bar'],
-      topAmenities: ['Beachfront', 'Spa', 'Bar']
-    },
-    {
-      id: 3,
-      name: 'Mountain View Lodge',
-      location: 'Swiss Alps, Switzerland',
-      rating: 4.7,
-      pricePerNight: 320,
-      image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?q=80&w=2070&auto=format&fit-crop',
-      amenities: ['Free WiFi', 'Ski-in/Ski-out', 'Spa', 'Restaurant'],
-      topAmenities: ['Ski-in/Ski-out', 'Spa']
-    }
-  ];
-
   searchQuery = '';
   selectedLocation: string[] = [];
   priceRange = '';
-  minRating = 1;
   selectedAmenities: string[] = [];
-  sortOption = 'rating-desc';
+  sortOption = 'price-asc';
 
-  itemsPerPage = 12;
-  currentPage = 0;
+  limit = 12;
+  page = 1;
+  total = 0;
 
-  locations = ['New York', 'Bali', 'Swiss Alps', 'Paris', 'Tokyo', 'London'];
-  amenities = ['Free WiFi', 'Pool', 'Spa', 'Gym', 'Restaurant', 'Bar', 'Beachfront', 'Ski-in/Ski-out'];
+  locations: string[] = [];
+  amenities: string[] = [];
 
-  favoriteHotels: number[] = [];
+  favoriteHotels: string[] = [];
+  hotels: Hotel[] = [];
 
-  constructor(private dialog: MatDialog, private router: Router) {}
+  constructor(
+    private dialog: MatDialog,
+    private router: Router,
+    private hotelsService: HotelsService
+  ) {}
+
+  ngOnInit(): void {
+    this.loadHotels();
+    this.loadFilters();
+  }
+
+  loadHotels() {
+    this.hotelsService.getHotels().subscribe(response => {
+      this.hotels = response.hotels;
+      this.total = response.total;
+    });
+  }
+
+  loadFilters() {
+    const allLocations = new Set<string>();
+    const allServices = new Set<string>();
+
+    this.hotels.forEach(hotel => {
+      allLocations.add(hotel.location);
+      hotel.services.forEach(service => allServices.add(service.name));
+    });
+
+    this.locations = Array.from(allLocations);
+    this.amenities = Array.from(allServices);
+  }
 
   get filteredHotels() {
     return this.hotels
@@ -86,36 +84,78 @@ export class BrowseHotelsComponent {
         const matchesSearch = !this.searchQuery ||
           hotel.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
           hotel.location.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-          hotel.amenities.some(a => a.toLowerCase().includes(this.searchQuery.toLowerCase()));
+          hotel.services.some(service =>
+            service.name.toLowerCase().includes(this.searchQuery.toLowerCase())
+          );
 
         const matchesLocation = this.selectedLocation.length === 0 ||
           this.selectedLocation.some(loc => hotel.location.includes(loc));
 
+        const minRoomPrice = this.getCheapestRoomPrice(hotel);
         let matchesPrice = true;
         if (this.priceRange) {
           if (this.priceRange === '300+') {
-            matchesPrice = hotel.pricePerNight >= 300;
+            matchesPrice = minRoomPrice >= 300;
           } else {
             const [min, max] = this.priceRange.split('-').map(Number);
-            matchesPrice = hotel.pricePerNight >= min && hotel.pricePerNight <= max;
+            matchesPrice = minRoomPrice >= min && minRoomPrice <= max;
           }
         }
 
-        const matchesRating = hotel.rating >= this.minRating;
-
+        const serviceNames = hotel.services.map(s => s.name);
         const matchesAmenities = this.selectedAmenities.length === 0 ||
-          this.selectedAmenities.every(a => hotel.amenities.includes(a));
+          this.selectedAmenities.every(a => serviceNames.includes(a));
 
-        return matchesSearch && matchesLocation && matchesPrice && matchesRating && matchesAmenities;
+        return matchesSearch && matchesLocation && matchesPrice && matchesAmenities;
       })
       .sort((a, b) => {
-        if (this.sortOption === 'price-asc') return a.pricePerNight - b.pricePerNight;
-        if (this.sortOption === 'price-desc') return b.pricePerNight - a.pricePerNight;
-        if (this.sortOption === 'rating-desc') return b.rating - a.rating;
+        const priceA = this.getCheapestRoomPrice(a);
+        const priceB = this.getCheapestRoomPrice(b);
+
+        if (this.sortOption === 'price-asc') return priceA - priceB;
+        if (this.sortOption === 'price-desc') return priceB - priceA;
         if (this.sortOption === 'name-asc') return a.name.localeCompare(b.name);
         return 0;
-      })
-      .slice(this.currentPage * this.itemsPerPage, (this.currentPage + 1) * this.itemsPerPage);
+      });
+  }
+
+  sortHotels() {
+    // Triggered by the template's (selectionChange) event
+    // The actual sorting is handled in the filteredHotels getter
+  }
+
+  // Price calculation helpers
+  getCheapestRoomPrice(hotel: Hotel): number {
+    if (!hotel.rooms || hotel.rooms.length === 0) return 0;
+    return Math.min(...hotel.rooms.map(room => room.pricePerNight));
+  }
+
+  hasDiscount(hotel: Hotel): boolean {
+    return hotel.rooms?.some(room => this.getOriginalRoomPrice(room) > room.pricePerNight);
+  }
+
+  getDiscountPercentage(hotel: Hotel): number {
+    const cheapestRoom = this.getCheapestRoom(hotel);
+    if (!cheapestRoom) return 0;
+    const original = this.getOriginalRoomPrice(cheapestRoom);
+    const discount = ((original - cheapestRoom.pricePerNight) / original) * 100;
+    return Math.round(discount);
+  }
+
+  getOriginalPrice(hotel: Hotel): number {
+    const cheapestRoom = this.getCheapestRoom(hotel);
+    return cheapestRoom ? this.getOriginalRoomPrice(cheapestRoom) : 0;
+  }
+
+  private getCheapestRoom(hotel: Hotel): any {
+    if (!hotel.rooms || hotel.rooms.length === 0) return null;
+    return hotel.rooms.reduce((prev, current) =>
+      (prev.pricePerNight < current.pricePerNight) ? prev : current
+    );
+  }
+
+  private getOriginalRoomPrice(room: any): number {
+    return room.pricePerNight * 1.2; // Assuming 20% markup for original price
   }
 
   openFilters() {
@@ -127,7 +167,6 @@ export class BrowseHotelsComponent {
         amenities: this.amenities,
         selectedLocation: this.selectedLocation,
         priceRange: this.priceRange,
-        minRating: this.minRating,
         selectedAmenities: this.selectedAmenities
       }
     });
@@ -136,9 +175,8 @@ export class BrowseHotelsComponent {
       if (result) {
         this.selectedLocation = result.selectedLocation;
         this.priceRange = result.priceRange;
-        this.minRating = result.minRating;
         this.selectedAmenities = result.selectedAmenities;
-        this.currentPage = 0;
+        this.page = 1; // Reset to first page when filters change
       }
     });
   }
@@ -146,31 +184,26 @@ export class BrowseHotelsComponent {
   clearFilters() {
     this.selectedLocation = [];
     this.priceRange = '';
-    this.minRating = 1;
     this.selectedAmenities = [];
-    this.currentPage = 0;
+    this.page = 1;
   }
 
   onPageChange(event: PageEvent) {
-    this.currentPage = event.pageIndex;
-    this.itemsPerPage = event.pageSize;
+    this.page = event.pageIndex + 1;
+    this.limit = event.pageSize;
   }
 
-  toggleFavorite(hotel: any) {
-    const index = this.favoriteHotels.indexOf(hotel.id);
+  toggleFavorite(hotelId: string) {
+    const index = this.favoriteHotels.indexOf(hotelId);
     if (index === -1) {
-      this.favoriteHotels.push(hotel.id);
+      this.favoriteHotels.push(hotelId);
     } else {
       this.favoriteHotels.splice(index, 1);
     }
   }
 
-  isFavorite(hotel: any): boolean {
-    return this.favoriteHotels.includes(hotel.id);
-  }
-
-  viewHotel(id: number) {
-    this.router.navigate(['/hotels', id]);
+  isFavorite(hotelId: string): boolean {
+    return this.favoriteHotels.includes(hotelId);
   }
 }
 
@@ -204,16 +237,6 @@ export class BrowseHotelsComponent {
           <mat-option value="100-200">$100 - $200</mat-option>
           <mat-option value="200-300">$200 - $300</mat-option>
           <mat-option value="300+">$300+</mat-option>
-        </mat-select>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="w-full mb-4">
-        <mat-label>Rating</mat-label>
-        <mat-select [(value)]="data.minRating">
-          <mat-option value="4">4+ Stars</mat-option>
-          <mat-option value="3">3+ Stars</mat-option>
-          <mat-option value="2">2+ Stars</mat-option>
-          <mat-option value="1">Any Rating</mat-option>
         </mat-select>
       </mat-form-field>
 
@@ -251,7 +274,6 @@ export class FiltersDialogComponent {
     this.dialogRef.close({
       selectedLocation: [],
       priceRange: '',
-      minRating: 1,
       selectedAmenities: []
     });
   }

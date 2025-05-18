@@ -1,0 +1,22 @@
+.modal-box {
+  transition: all 0.3s ease;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.tab {
+  transition: all 0.2s ease;
+}
+
+/* Custom scrollbar for modal */
+.modal-box::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-box::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.modal-box::-webkit-scrollbar-thumb {
+  @apply bg-base-300 rounded-full;
+}

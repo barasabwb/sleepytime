@@ -1,0 +1,27 @@
+/* Make mat-form-field background transparent in all your sections */
+.section-basic-info mat-form-field,
+.section-photos mat-form-field,
+.section-services mat-form-field,
+.section-rooms mat-form-field {
+  background: transparent !important;
+}
+
+/* Optional: add some spacing and consistent style for inner containers */
+.section-services > div[formGroupName] {
+  background: #f9fafb; /* slightly lighter gray */
+  padding: 1rem;
+  border-radius: 0.375rem; /* rounded-lg */
+  border: 1px solid #e5e7eb; /* border-gray-200 */
+  margin-bottom: 1rem;
+}
+
+/* Similar for rooms’ form groups */
+.section-rooms > div[formGroupName] {
+  background: #f9fafb;
+  padding: 1rem;
+  border-radius: 0.375rem;
+  border: 1px solid #e5e7eb;
+  margin-bottom: 1rem;
+}
+
+

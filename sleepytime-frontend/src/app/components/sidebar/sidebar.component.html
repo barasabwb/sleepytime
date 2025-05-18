@@ -1,19 +1,45 @@
-<aside class="sidebar glassy fixed top-0 left-0 h-full w-64 shadow-xl z-40 pt-20">
-  <div class="p-6 text-white font-bold text-2xl tracking-wide flex items-center gap-2">
-    <mat-icon>menu</mat-icon> Dashboard
+<aside class="sidebar fixed top-0 left-0 h-full w-56 pt-20 shadow-2xl z-40 transition-all duration-300 bg-base-100 border-r border-base-200">
+  <!-- Logo/Brand Area -->
+  <div class="p-4 flex items-center gap-3 border-b border-base-300">
+    <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white">
+      <mat-icon class="!w-5 !h-5">hotel</mat-icon>
+    </div>
+    <h1 class="text-lg font-bold text-base-content truncate">SleepyTime</h1>
   </div>
-  <nav class="flex flex-col gap-2 px-6 mt-6 text-white">
-    <a routerLink="/admin/dashboard" class="sidebar-link">
-      <mat-icon>insights</mat-icon> Overview
-    </a>
-    <a routerLink="/admin/bookings" class="sidebar-link">
-      <mat-icon>book_online</mat-icon> Bookings
-    </a>
-    <a routerLink="/admin/hotels" class="sidebar-link">
-      <mat-icon>hotel</mat-icon> Hotels
-    </a>
-    <a routerLink="/admin/users" class="sidebar-link">
-      <mat-icon>group</mat-icon> Users
-    </a>
+
+  <!-- Navigation Links -->
+  <nav class="flex flex-col gap-1 p-2 gap-y-4">
+    @for (item of sidebarItems; track item.route) {
+      <a
+        [routerLink]="item.route"
+        routerLinkActive="active-link"
+        class="sidebar-link group">
+        <span class="icon-wrapper mr-4">
+          <mat-icon class="!w-5 !h-5 group-hover:scale-110">{{item.icon}}</mat-icon>
+        </span>
+        <span class="link-text">{{item.label}}</span>
+        @if (item.badge) {
+          <span class="badge badge-primary badge-xs ml-auto">{{item.badge}}</span>
+        }
+      </a>
+    }
   </nav>
+
+  <!-- User Profile -->
+  <div class="absolute bottom-0 left-0 right-0 p-3 border-t border-base-300 bg-base-200">
+    <div class="flex items-center gap-2">
+      <div class="avatar">
+        <div class="w-8 h-8 rounded-full bg-primary text-primary-content flex items-center justify-center">
+          <mat-icon class="!w-4 !h-4">person</mat-icon>
+        </div>
+      </div>
+      <div class="flex-1 min-w-0">
+        <p class="text-sm font-medium text-base-content truncate">Admin User</p>
+        <p class="text-xs text-base-content/70 truncate">adminsleeptime.com</p>
+      </div>
+      <button mat-icon-button class="!w-6 !h-6 text-base-content/70 hover:text-base-content">
+        <mat-icon class="!w-4 !h-4">logout</mat-icon>
+      </button>
+    </div>
+  </div>
 </aside>

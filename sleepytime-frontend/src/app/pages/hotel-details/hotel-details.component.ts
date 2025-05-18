@@ -1,46 +1,92 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { CommonModule } from '@angular/common';
-import { MatIconModule } from '@angular/material/icon'; // if using Angular Material icons
+import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { RouterLink, RouterModule } from '@angular/router';
+import { HotelsService } from '../../services/hotels.service';
+import { Hotel } from '../../models/hotel.model';
+import { MatTooltipModule } from '@angular/material/tooltip'; // Add this import
+import { DatePipe } from '@angular/common'; // Add this for date pipe
+
 @Component({
   selector: 'app-hotel-details',
   standalone: true,
-  imports: [CommonModule, MatIconModule, MatButtonModule,RouterModule],
+  imports: [
+    CommonModule,
+    MatIconModule,
+    MatButtonModule,
+    RouterLink,
+    RouterModule,
+     MatTooltipModule, // Add this module
+  ],
   templateUrl: './hotel-details.component.html',
   styleUrls: ['./hotel-details.component.css']
 })
 export class HotelDetailsComponent implements OnInit {
-  hotelId!: string | null;
-  hotel: any;
+  hotel: Hotel | null = null;
+  similarHotels: Hotel[] = [];
+  Math = Math; // Make Math available in template
 
-  // Simulated hotels data - replace later with API call
-  hotels = [
-    {
-      id: '1',
-      name: 'Ocean View Resort',
-      description: 'A beautiful seaside resort with stunning views.',
-      rating: 4.7,
-      address: '123 Beach Rd, Miami',
-      rooms: ['Standard', 'Deluxe', 'Suite'],
-      imageUrl: 'https://images.unsplash.com/photo-1501117716987-c8e4c86fc8ae'
-    },
-    {
-      id: '2',
-      name: 'Mountain Escape',
-      description: 'Cozy cabins surrounded by nature.',
-      rating: 4.5,
-      address: '456 Hilltop Dr, Aspen',
-      rooms: ['Cabin', 'Suite'],
-      imageUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb'
+  constructor(
+    private route: ActivatedRoute,
+    private hotelsService: HotelsService
+  ) {}
+
+  ngOnInit(): void {
+    const hotelId = this.route.snapshot.paramMap.get('id');
+    if (hotelId) {
+      this.loadHotelDetails(hotelId);
     }
-  ];
+  }
 
-  constructor(private route: ActivatedRoute) {}
+  loadHotelDetails(hotelId: string) {
+    this.hotelsService.getHotelById(hotelId).subscribe(hotel => {
+      this.hotel = hotel;
+    });
+  }
 
-  ngOnInit() {
-    this.hotelId = this.route.snapshot.paramMap.get('id');
-    this.hotel = this.hotels.find(h => h.id === this.hotelId);
+
+  getAmenityIcon(serviceName: string): string {
+    const icons: {[key: string]: string} = {
+      'Pool': 'pool',
+      'Restaurant': 'restaurant',
+      'Spa': 'spa',
+      'Gym': 'fitness_center',
+      'Bar': 'local_bar',
+      'Room Service': 'room_service',
+      'WiFi': 'wifi',
+      'Parking': 'local_parking'
+    };
+    return icons[serviceName] || 'check_circle';
+  }
+
+  getCheapestRoomPrice(): number {
+    if (!this.hotel?.rooms || this.hotel.rooms.length === 0) return 0;
+    return Math.min(...this.hotel.rooms.map(room => room.pricePerNight));
+  }
+
+  hasDiscount(): boolean {
+    if (!this.hotel?.rooms) return false;
+    return this.hotel.rooms.some(room => this.getOriginalRoomPrice(room) > room.pricePerNight);
+  }
+
+  getOriginalRoomPrice(room: any): number {
+    return room.pricePerNight * 1.2; // Assuming 20% markup for original price
+  }
+
+  getDiscountPercentage(): number {
+    if (!this.hotel?.rooms || this.hotel.rooms.length === 0) return 0;
+    const cheapestRoom = this.getCheapestRoom();
+    const original = this.getOriginalRoomPrice(cheapestRoom);
+    const discount = ((original - cheapestRoom.pricePerNight) / original) * 100;
+    return Math.round(discount);
+  }
+
+  private getCheapestRoom(): any {
+    if (!this.hotel?.rooms || this.hotel.rooms.length === 0) return null;
+    return this.hotel.rooms.reduce((prev, current) =>
+      (prev.pricePerNight < current.pricePerNight) ? prev : current
+    );
   }
 }
