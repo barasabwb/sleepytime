@@ -27,19 +27,40 @@
           <mat-icon class="text-primary">account_circle</mat-icon>
         </button>
         <mat-menu #userMenu="matMenu">
-          <button mat-menu-item routerLink="/profile">
-            <mat-icon>person</mat-icon>
-            <span>My Profile</span>
-          </button>
-          <button mat-menu-item routerLink="/my-bookings">
-            <mat-icon>bookmark</mat-icon>
-            <span>My Bookings</span>
-          </button>
-          <mat-divider></mat-divider>
-          <button mat-menu-item (click)="logout()">
-            <mat-icon>logout</mat-icon>
-            <span>Sign Out</span>
-          </button>
+          <span  *ngIf="isAdmin">
+
+            <button mat-menu-item routerLink="/admin/dashboard">
+                <mat-icon>bookmark</mat-icon>
+                <span>My Dashboard</span>
+              </button>
+                <button mat-menu-item routerLink="/admin/profile">
+              <mat-icon>person</mat-icon>
+              <span>My Profile</span>
+            </button>
+            <mat-divider></mat-divider>
+            <button mat-menu-item (click)="logout()">
+              <mat-icon>logout</mat-icon>
+              <span>Sign Out</span>
+            </button>
+          </span>
+
+            <span  *ngIf="!isAdmin">
+              <button mat-menu-item routerLink="/user/dashboard">
+                <mat-icon>bookmark</mat-icon>
+                <span>My Dashboard</span>
+              </button>
+                <button mat-menu-item routerLink="/admin/profile">
+                <mat-icon>person</mat-icon>
+                <span>My Profile</span>
+              </button>
+
+              <mat-divider></mat-divider>
+              <button mat-menu-item (click)="logout()">
+                <mat-icon>logout</mat-icon>
+                <span>Sign Out</span>
+              </button>
+          </span>
+
         </mat-menu>
       </div>
 

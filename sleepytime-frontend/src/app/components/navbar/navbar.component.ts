@@ -27,19 +27,23 @@ export class NavbarComponent {
   mobileMenuOpen = false;
   constructor(private authService: AuthService, private router: Router) {}
   isAuthenticated = false;
-
-
+  isAdmin = false;
   ngOnInit(): void {
     this.isAuthenticated = this.authService.isLoggedIn();
+    if(this.authService.getUser().user.role==='admin'){
+      this.isAdmin=true;
+    }
   }
   toggleMobileMenu() {
     this.mobileMenuOpen = !this.mobileMenuOpen;
   }
 
   logout() {
-    // Implement your logout logic here
-    console.log("hello");
+
     this.authService.logout();
-    this.router.navigate(['/']); // Redirect to landing page or login
+    let router = this.router;
+    window.setTimeout(function(){
+        router.navigate(['/']);
+    }, 500)
   }
 }

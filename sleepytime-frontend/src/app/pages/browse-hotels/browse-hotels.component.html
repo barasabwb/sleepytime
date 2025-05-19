@@ -52,19 +52,19 @@
           <img [src]="hotel.photos[0] || 'assets/hotel.jpeg'"
                [alt]="hotel.name"
                class="w-full h-64 object-cover rounded-t-2xl" />
-          <button mat-icon-button class="absolute top-2 right-2 bg-base-100/80 rounded-full"
+          <!-- <button mat-icon-button class="absolute top-2 right-2 bg-base-100/80 rounded-full"
                   (click)="toggleFavorite(hotel._id)">
             <mat-icon [class.text-red-500]="isFavorite(hotel._id)">favorite</mat-icon>
-          </button>
+          </button> -->
         </figure>
 
         <!-- Hotel Info -->
         <div class="card-body flex-grow">
           <div class="flex justify-between items-start">
             <h2 class="card-title text-white">{{ hotel.name }}</h2>
-            <div class="badge badge-accent text-white" *ngIf="hasDiscount(hotel)">
+            <!-- <div class="badge badge-accent text-white" *ngIf="hasDiscount(hotel)">
               {{ getDiscountPercentage(hotel) }}% OFF
-            </div>
+            </div> -->
           </div>
 
           <div class="flex items-center gap-2 text-base-content/80 mb-2">
@@ -85,9 +85,9 @@
             <div class="flex items-center gap-2">
               <p class="text-2xl font-bold text-primary">${{ getCheapestRoomPrice(hotel) }}</p>
               <p class="text-base-content/80">/ night</p>
-              <p class="text-sm line-through text-base-content/60 ml-2" *ngIf="hasDiscount(hotel)">
+              <!-- <p class="text-sm line-through text-base-content/60 ml-2" *ngIf="hasDiscount(hotel)">
                 ${{ getOriginalPrice(hotel) }}
-              </p>
+              </p> -->
             </div>
 
             <div class="card-actions mt-4">

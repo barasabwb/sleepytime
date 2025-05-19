@@ -66,7 +66,7 @@ export const routes: Routes = [
     },
     {
       path: 'profile',
-             canActivate: [adminGuard],
+             canActivate: [authGuard],
 
       loadComponent: () =>
         import('./pages/profile/profile.component').then(m => m.ProfileComponent)
@@ -95,6 +95,7 @@ export const routes: Routes = [
   children: [
     {
       path: 'dashboard',
+      canActivate: [authGuard],
       loadComponent: () =>
         import('./user/dashboard/dashboard.component').then(m => m.UserDashboardComponent)
     }

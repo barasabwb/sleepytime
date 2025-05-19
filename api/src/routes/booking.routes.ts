@@ -15,8 +15,8 @@ router.post('/', authenticateJWT, createBooking);
 router.get('/', authenticateJWT, requireAdmin, getAllBookings);
 router.get('/my', authenticateJWT, getMyBookings);
 
-router.get('/:id/', authenticateJWT, getBookingById);
-router.put('/:id/cancel', authenticateJWT, cancelBooking);
+router.get('/getbooking/:id/', authenticateJWT, getBookingById);
+router.put('/getbooking/:id/cancel', authenticateJWT, cancelBooking);
 
 
 export default router;

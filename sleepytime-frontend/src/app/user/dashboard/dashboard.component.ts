@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -6,16 +6,12 @@ import { MatCardModule } from '@angular/material/card';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatDividerModule } from '@angular/material/divider';
 import { RouterModule } from '@angular/router';
-
-interface Booking {
-  id: string;
-  hotel: string;
-  image: string;
-  dates: string;
-  guests: number;
-  price: number;
-  status: 'upcoming' | 'completed' | 'cancelled';
-}
+import { BookingService } from '../../services/booking.service';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { BookingDetailsComponent } from '../../pages/booking-details/booking-details.component';
+import { AuthService } from '../../services/auth.service'; // Adjust path if needed
 
 interface Hotel {
   id: string;
@@ -36,105 +32,80 @@ interface Hotel {
     MatCardModule,
     MatTabsModule,
     MatDividerModule,
-    RouterModule
+    RouterModule,
+    MatDialogModule,
+    MatSnackBarModule
   ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
 export class UserDashboardComponent {
-  activeTabIndex = signal(0); // 0=Bookings, 1=Favorites, 2=Recommendations
+  activeTabIndex = signal(0);
 
-  user = signal({
-    name: 'Alex Johnson',
-    membership: 'Gold Member',
-    avatar: '/assets/user-avatar.jpg'
-  });
+  // Reactive booking list (fetched from the API)
+  bookings = signal<any[]>([]);
 
-  bookings = signal<Booking[]>([
-    {
-      id: '1',
-      hotel: 'Grand Plaza',
-      image: '/assets/hotel-1.jpg',
-      dates: 'Jun 15-20, 2023',
-      guests: 2,
-      price: 1250,
-      status: 'upcoming'
-    },
-    {
-      id: '2',
-      hotel: 'Beach Resort',
-      image: '/assets/hotel-2.jpg',
-      dates: 'May 10-15, 2023',
-      guests: 4,
-      price: 980,
-      status: 'completed'
-    },
-    {
-      id: '3',
-      hotel: 'Mountain Lodge',
-      image: '/assets/hotel-3.jpg',
-      dates: 'Jul 5-12, 2023',
-      guests: 2,
-      price: 1750,
-      status: 'upcoming'
+
+  constructor(private bookingService: BookingService,private dialog: MatDialog,private snackBar: MatSnackBar, private authService: AuthService) {
+    this.fetchBookings();
+  }
+    user: any;
+
+  ngOnInit(): void {
+    this.user = this.authService.getUser().user;
+
+  }
+
+  fetchBookings() {
+   this.bookingService.getMyBookings().subscribe({
+      next: (res) => {
+        this.bookings.set(res.bookings);
+      },
+      error: (err) => {
+        console.error('Error loading bookings:', err);
+      }
+    });
+  }
+
+  viewBookingDetails(bookingId: string): void {
+    this.bookingService.getBookingById(bookingId).subscribe({
+      next: (res) => {
+        const bookingDetails = res.booking; // adjust based on your API response structure
+        this.dialog.open(BookingDetailsComponent, {
+          width: '800px',
+          data: bookingDetails
+        });
+      },
+      error: (err) => {
+        console.error('Failed to load booking details', err);
+        this.snackBar.open('Failed to load booking details.', 'Close', { duration: 3000 });
+      }
+    });
+  }
+
+
+    cancelBooking(bookingId: string): void {
+      if (!confirm('Are you sure you want to cancel this booking?')) return;
+
+      this.bookingService.cancelBooking(bookingId).subscribe({
+        next: () => {
+          this.snackBar.open('Booking cancelled successfully.', 'Close', { duration: 3000 });
+          this.fetchBookings(); // Refresh the list
+        },
+        error: (err) => {
+          console.error('Cancel failed:', err);
+          this.snackBar.open('Failed to cancel booking.', 'Close', { duration: 3000 });
+        }
+      });
     }
-  ]);
 
-  favorites = signal<Hotel[]>([
-    {
-      id: '4',
-      name: 'City Central',
-      location: 'New York, NY',
-      image: '/assets/hotel-4.jpg',
-      rating: 4.5,
-      price: 320
-    },
-    {
-      id: '5',
-      name: 'Lakeside Retreat',
-      location: 'Lake Tahoe, CA',
-      image: '/assets/hotel-5.jpg',
-      rating: 4.8,
-      price: 420
-    }
-  ]);
-
-  recommendations = signal<Hotel[]>([
-    {
-      id: '6',
-      name: 'Desert Oasis',
-      location: 'Phoenix, AZ',
-      image: '/assets/hotel-6.jpg',
-      rating: 4.3,
-      price: 280
-    },
-    {
-      id: '7',
-      name: 'Historic Inn',
-      location: 'Boston, MA',
-      image: '/assets/hotel-7.jpg',
-      rating: 4.6,
-      price: 380
-    }
-  ]);
+  // Stub favorites and recommendations for now
+  favorites = signal<Hotel[]>([]);
+  recommendations = signal<Hotel[]>([]);
 
   onTabChange(index: number) {
     this.activeTabIndex.set(index);
   }
 
-  getStatusColor(status: Booking['status']) {
-    return {
-      upcoming: 'bg-blue-100 text-blue-800',
-      completed: 'bg-green-100 text-green-800',
-      cancelled: 'bg-red-100 text-red-800'
-    }[status];
-  }
 
-  cancelBooking(id: string) {
-    this.bookings.update(bookings =>
-      bookings.map(booking =>
-        booking.id === id ? { ...booking, status: 'cancelled' } : booking
-      )
-    );
-  }
 }

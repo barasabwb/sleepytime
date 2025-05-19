@@ -28,18 +28,22 @@ export class BookingService {
     return this.http.get<BookingApiResponse>(this.apiUrl, { headers: this.getAuthHeaders() });
   }
 
+  getMyBookings(): Observable<BookingApiResponse> {
+    return this.http.get<BookingApiResponse>(this.apiUrl+'my', { headers: this.getAuthHeaders() });
+  }
+
   createBooking(bookingData: any): Observable<any> {
     return this.http.post<any>(this.apiUrl, bookingData, { headers: this.getAuthHeaders() });
   }
 
   cancelBooking(bookingId: string): Observable<any> {
-    const cancelUrl = `${this.apiUrl}${bookingId}/cancel`;
+    const cancelUrl = `${this.apiUrl}getbooking/${bookingId}/cancel`;
     return this.http.put<any>(cancelUrl, {}, { headers: this.getAuthHeaders() });
   }
 
   getBookingById(bookingId: string): Observable<SingleBookingApiResponse> {
     console.log(bookingId);
-    const url = `${this.apiUrl}${bookingId}`;
+    const url = `${this.apiUrl}getbooking/${bookingId}`;
     return this.http.get<SingleBookingApiResponse>(url, { headers: this.getAuthHeaders() });
   }
 }

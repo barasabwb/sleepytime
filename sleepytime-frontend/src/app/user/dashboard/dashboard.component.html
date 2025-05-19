@@ -3,46 +3,41 @@
   <div class="flex flex-col md:flex-row gap-6 mb-8 bg-base-200 rounded-box p-6 shadow-sm">
     <div class="flex items-center gap-4">
       <div class="avatar online">
-        <div class="w-16 h-16 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
-          <img [src]="user().avatar" alt="User avatar" />
-        </div>
+        <!-- <div class="w-16 h-16 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
+          <img [src]="" alt="User avatar" />
+        </div> -->
       </div>
       <div>
-        <h1 class="text-2xl font-bold text-base-content">Welcome, {{ user().name }}</h1>
-        <div class="badge badge-primary mt-1 gap-1">
-          <mat-icon class="!text-base">stars</mat-icon>
-          {{ user().membership }}
-        </div>
+        <h1 class="text-2xl font-bold text-base-content">Welcome, {{ user.name }}</h1>
+
       </div>
     </div>
 
     <div class="md:ml-auto flex gap-3 self-center">
-      <button mat-stroked-button class="flex items-center gap-2 border-base-300 text-base-content hover:bg-base-300">
+      <button routerLink="/admin/profile" mat-stroked-button class="flex items-center gap-2 border-base-300 text-base-content hover:bg-base-300">
         <mat-icon>edit</mat-icon>
         Edit Profile
       </button>
-      <button mat-flat-button color="primary" class="flex items-center gap-2 shadow-md hover:shadow-lg">
+      <!-- <button mat-flat-button color="primary" class="flex items-center gap-2 shadow-md hover:shadow-lg">
         <mat-icon>add</mat-icon>
         New Booking
-      </button>
+      </button> -->
     </div>
   </div>
 
-  <!-- Dashboard Tabs -->
-  <mat-tab-group [selectedIndex]="activeTabIndex()"
-                 (selectedIndexChange)="onTabChange($event)"
-                 class="mb-8 bg-base-200 rounded-box shadow-sm overflow-hidden">
+  <!-- Bookings Tab Only -->
+  <mat-tab-group [selectedIndex]="0" class="mb-8 bg-base-200 rounded-box shadow-sm overflow-hidden">
     <mat-tab label="My Bookings">
       <div class="p-6">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          @for (booking of bookings(); track booking.id) {
+          @for (booking of bookings(); track booking._id) {
             <div class="card card-side bg-base-100 shadow-md hover:shadow-xl transition-shadow border border-base-300">
               <figure class="relative w-48 flex-shrink-0">
-                <img [src]="booking.image" [alt]="booking.hotel" class="h-full object-cover">
+                <img src="/assets/placeholder-hotel.jpg" alt="Hotel image" class="h-full object-cover">
                 <div class="absolute top-3 left-3">
                   <span class="badge badge-sm font-semibold shadow-sm"
                         [class.badge-accent]="booking.status === 'upcoming'"
-                        [class.badge-success]="booking.status === 'completed'"
+                        [class.badge-success]="booking.status === 'confirmed'"
                         [class.badge-error]="booking.status === 'cancelled'">
                     {{ booking.status | titlecase }}
                   </span>
@@ -50,7 +45,7 @@
               </figure>
               <div class="card-body p-5">
                 <div class="flex justify-between items-start">
-                  <h2 class="card-title text-base-content">{{ booking.hotel }}</h2>
+                  <h2 class="card-title text-base-content">{{ booking.hotel.name }}</h2>
                   <button mat-icon-button class="text-base-content/50 hover:text-base-content">
                     <mat-icon>more_vert</mat-icon>
                   </button>
@@ -59,28 +54,36 @@
                 <div class="mt-2 space-y-2 text-base-content/80">
                   <div class="flex items-center gap-2">
                     <mat-icon class="!text-base-content/50">calendar_today</mat-icon>
-                    <span>{{ booking.dates }}</span>
+                    <span>{{ booking.checkIn | date:'mediumDate' }} – {{ booking.checkOut | date:'mediumDate' }}</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <mat-icon class="!text-base-content/50">hotel</mat-icon>
+                    <span>{{ booking.room.roomType }} Room</span>
                   </div>
                   <div class="flex items-center gap-2">
                     <mat-icon class="!text-base-content/50">people</mat-icon>
-                    <span>{{ booking.guests }} guest{{ booking.guests > 1 ? 's' : '' }}</span>
+                    <span>{{ booking.room.maxGuests }} guest{{ booking.room.maxGuests > 1 ? 's' : '' }}</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <mat-icon class="!text-base-content/50">location_on</mat-icon>
+                    <span>{{ booking.hotel.location }}</span>
                   </div>
                 </div>
 
                 <div class="divider my-2"></div>
 
                 <div class="card-actions justify-between items-center">
-                  <p class="text-2xl font-bold text-primary">${{ booking.price }}</p>
+                  <p class="text-2xl font-bold text-primary">${{ booking.totalPrice }}</p>
                   <div class="flex gap-2">
-                    @if (booking.status === 'upcoming') {
-                      <button mat-stroked-button color="warn"
+                    @if (booking.status === 'confirmed') {
+                      <button (click)="cancelBooking(booking._id)" mat-stroked-button color="warn"
                               class="border-error/20 text-error hover:bg-error/10">
                         Cancel
                       </button>
                     }
                     <button mat-button color="primary"
                             class="bg-primary/10 text-primary hover:bg-primary/20"
-                            [routerLink]="['/booking', booking.id]">
+                            (click)="viewBookingDetails(booking._id)">
                       View Details
                     </button>
                   </div>
@@ -93,116 +96,8 @@
                 <mat-icon class="!text-5xl !w-16 !h-16 text-base-content/30">event_busy</mat-icon>
                 <h3 class="card-title text-base-content/70 mt-4">No bookings yet</h3>
                 <p class="text-base-content/50">You haven't made any bookings yet</p>
-                <button mat-flat-button color="primary" class="mt-4">
+                <button routerLink="/hotels" mat-flat-button color="primary" class="mt-4">
                   Explore Hotels
-                </button>
-              </div>
-            </div>
-          }
-        </div>
-      </div>
-    </mat-tab>
-
-    <mat-tab label="Favorites">
-      <div class="p-6">
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          @for (hotel of favorites(); track hotel.id) {
-            <div class="card bg-base-100 shadow-md hover:shadow-xl transition-shadow border border-base-300">
-              <figure class="relative">
-                <img [src]="hotel.image" [alt]="hotel.name" class="h-48 w-full object-cover">
-                <button mat-icon-button
-                        class="absolute top-2 right-2 bg-base-100/90 text-error hover:bg-base-100 shadow-sm">
-                  <mat-icon>favorite</mat-icon>
-                </button>
-              </figure>
-              <div class="card-body p-5">
-                <div class="flex justify-between items-start">
-                  <h2 class="card-title text-base-content">{{ hotel.name }}</h2>
-                  <div class="badge badge-accent gap-1">
-                    <mat-icon class="!text-base">star</mat-icon>
-                    {{ hotel.rating }}
-                  </div>
-                </div>
-                <p class="flex items-center gap-1 text-base-content/70">
-                  <mat-icon class="!text-base">location_on</mat-icon>
-                  {{ hotel.location }}
-                </p>
-                <p class="text-xl font-bold text-primary mt-2">
-                  ${{ hotel.price }} <span class="text-sm font-normal text-base-content/50">/ night</span>
-                </p>
-
-                <div class="card-actions mt-4">
-                  <button mat-stroked-button class="border-base-300 text-base-content hover:bg-base-300 flex-1">
-                    Details
-                  </button>
-                  <button mat-flat-button color="primary" class="flex-1 shadow-md hover:shadow-lg">
-                    Book Now
-                  </button>
-                </div>
-              </div>
-            </div>
-          } @empty {
-            <div class="col-span-full card bg-base-200 border-2 border-dashed border-base-300">
-              <div class="card-body items-center text-center py-12">
-                <mat-icon class="!text-5xl !w-16 !h-16 text-base-content/30">favorite_border</mat-icon>
-                <h3 class="card-title text-base-content/70 mt-4">No favorites yet</h3>
-                <p class="text-base-content/50">Save hotels you love for quick access</p>
-                <button mat-stroked-button class="mt-4 border-base-300 text-base-content hover:bg-base-300">
-                  Browse Hotels
-                </button>
-              </div>
-            </div>
-          }
-        </div>
-      </div>
-    </mat-tab>
-
-    <mat-tab label="Recommendations">
-      <div class="p-6">
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          @for (hotel of recommendations(); track hotel.id) {
-            <div class="card bg-base-100 shadow-md hover:shadow-xl transition-shadow border border-base-300">
-              <figure class="relative">
-                <img [src]="hotel.image" [alt]="hotel.name" class="h-48 w-full object-cover">
-                <div class="badge badge-success absolute top-2 left-2 text-white shadow-sm">
-                  Recommended
-                </div>
-              </figure>
-              <div class="card-body p-5">
-                <div class="flex justify-between items-start">
-                  <h2 class="card-title text-base-content">{{ hotel.name }}</h2>
-                  <div class="badge badge-accent gap-1">
-                    <mat-icon class="!text-base">star</mat-icon>
-                    {{ hotel.rating }}
-                  </div>
-                </div>
-                <p class="flex items-center gap-1 text-base-content/70">
-                  <mat-icon class="!text-base">location_on</mat-icon>
-                  {{ hotel.location }}
-                </p>
-                <p class="text-xl font-bold text-primary mt-2">
-                  ${{ hotel.price }} <span class="text-sm font-normal text-base-content/50">/ night</span>
-                </p>
-
-                <div class="card-actions mt-4">
-                  <button mat-stroked-button class="border-base-300 text-base-content hover:bg-base-300 flex-1 gap-1">
-                    <mat-icon class="!text-base">favorite_border</mat-icon>
-                    Save
-                  </button>
-                  <button mat-flat-button color="primary" class="flex-1 shadow-md hover:shadow-lg">
-                    Book Now
-                  </button>
-                </div>
-              </div>
-            </div>
-          } @empty {
-            <div class="col-span-full card bg-base-200 border-2 border-dashed border-base-300">
-              <div class="card-body items-center text-center py-12">
-                <mat-icon class="!text-5xl !w-16 !h-16 text-base-content/30">search_off</mat-icon>
-                <h3 class="card-title text-base-content/70 mt-4">No recommendations</h3>
-                <p class="text-base-content/50">Complete your profile to get personalized recommendations</p>
-                <button mat-stroked-button class="mt-4 border-base-300 text-base-content hover:bg-base-300">
-                  Update Profile
                 </button>
               </div>
             </div>
